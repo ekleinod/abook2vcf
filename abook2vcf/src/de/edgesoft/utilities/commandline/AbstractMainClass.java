@@ -27,17 +27,24 @@ public abstract class AbstractMainClass {
 	
 	/** Command line values. */
 	private static CommandLine theCommandLine = null;
+	
+	/** Calling class. */
+	private static Class<? extends AbstractMainClass> theCallingClass = null;
 
 	/**
 	 * Main method, called from command line.
 	 * 
 	 * @param args command line arguments
+	 * @param theClass calling class
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void init(String[] args) {
+	public static void init(String[] args, Class<? extends AbstractMainClass> theClass) {
 		try {
+			// store calling class
+			theCallingClass = theClass;
+			
 			// handle commandline options with apache commons cli
 			Options theOptions = new Options();
 			for (CommandOption theCommandOption : lstCommandOptions) {
@@ -47,10 +54,10 @@ public abstract class AbstractMainClass {
 			// parse options
 			theCommandLine = new PosixParser().parse(theOptions, args);
 		} catch (Exception e) {
-			System.err.println();
-			System.err.println(getUsage(AbstractMainClass.class));
-			System.err.println();
-			e.printStackTrace();
+			printError("");
+			printError(getUsage());
+			printError("");
+			printError(e);
 			System.exit(1);
 		}
 	}
@@ -65,7 +72,7 @@ public abstract class AbstractMainClass {
 	 */
 	public static void addCommandOption(CommandOption theCommandOption) {
 		if (lstCommandOptions == null) {
-			lstCommandOptions = new ArrayList<>();
+			lstCommandOptions = new ArrayList<CommandOption>();
 		}
 		lstCommandOptions.add(theCommandOption);
 	}
@@ -86,17 +93,16 @@ public abstract class AbstractMainClass {
 	/**
 	 * Returns the usage message.
 	 * 
-	 * @param theClass calling class
 	 * @return usage message
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static String getUsage(Class<?> theClass) {
+	public static String getUsage() {
 		StringBuffer sbReturn = new StringBuffer();
 
 		sbReturn.append(MessageFormat.format("Call: java -jar {0}.jar{1}",
-				theClass.getSimpleName().toLowerCase(),
+				theCallingClass.getSimpleName().toLowerCase(),
 				System.getProperty("line.separator")));
 
 		for (CommandOption theCommandOption : lstCommandOptions) {
@@ -132,7 +138,34 @@ public abstract class AbstractMainClass {
 				wrtOutput.close();
 			}
 		}
-		System.out.println(MessageFormat.format("Created file: ''{0}''.", fleOutput.getAbsolutePath()));
+		printMessage(MessageFormat.format("Created file: ''{0}''.", fleOutput.getAbsolutePath()));
+	}
+	
+	/**
+	 * Prints a message.
+	 * 
+	 * @param theMessage the message
+	 */
+	public static void printMessage(String theMessage) {
+		System.out.println(theMessage);
+	}
+	
+	/**
+	 * Prints an error message.
+	 * 
+	 * @param theError the error message
+	 */
+	public static void printError(String theError) {
+		System.out.println(theError);
+	}
+	
+	/**
+	 * Prints an exception.
+	 * 
+	 * @param theException the exception
+	 */
+	public static void printError(Exception theException) {
+		theException.printStackTrace();
 	}
 	
 }
