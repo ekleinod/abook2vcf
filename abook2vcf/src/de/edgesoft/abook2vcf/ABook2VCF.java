@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import mozilla.thunderbird.Address;
+import mozilla.thunderbird.AddressBook;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
 
@@ -88,7 +92,7 @@ public class ABook2VCF extends AbstractMainClass {
 	public static void convertABook(String theInFile, String theOutFile, int theVCFCount) throws ABookException {
 		
 		try {
-			List<mozilla.thunderbird.Address> theAddresses = loadAdresses(theInFile);
+			List<Address> theAddresses = loadAdresses(theInFile);
 			printMessage(MessageFormat.format("address count: {0, number}", theAddresses.size()));
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
@@ -113,14 +117,33 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(List<mozilla.thunderbird.Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
+	public static void writeVCards(List<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
+		
+		StringBuffer sbRemovedDoubles = new StringBuffer();
+		Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
+		for (Address theAddress : theAddresses) {
+			if (!setAddresses.add(theAddress)) {
+				sbRemovedDoubles.append(theAddress.get("DisplayName"));
+				sbRemovedDoubles.append(";");
+				sbRemovedDoubles.append(theAddress.get("FirstName"));
+				sbRemovedDoubles.append(";");
+				sbRemovedDoubles.append(theAddress.get("LastName"));
+				sbRemovedDoubles.append(";");
+				sbRemovedDoubles.append(theAddress.get("PrimaryEmail"));
+				sbRemovedDoubles.append("\n");
+			}
+		}
 		
 		try {
+			
+			writeFile(String.format(theOutFilePattern, 0) + ".doubles.txt", sbRemovedDoubles.toString());
+			
+			
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
 			StringBuffer sbFileContent = null;
 			
-			for (mozilla.thunderbird.Address theAddress : theAddresses) {
+			for (Address theAddress : setAddresses) {
 				
 				if (iAddressesInFile == 0) {
 					sbFileContent = new StringBuffer();
@@ -193,9 +216,9 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	private static List<mozilla.thunderbird.Address> loadAdresses(String theInFile) throws ABookException {
+	private static List<Address> loadAdresses(String theInFile) throws ABookException {
 		
-		mozilla.thunderbird.AddressBook theAddressBook = new mozilla.thunderbird.AddressBook();
+		AddressBook theAddressBook = new AddressBook();
 		
 		File fleABook = new File(theInFile);
 		
