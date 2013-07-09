@@ -216,14 +216,16 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append((theAddress.get("LastName") == null) ? "" : theAddress.get("LastName"));
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("FirstName") == null) ? "" : theAddress.get("FirstName"));
-				sbTemp.append(";");
-				sbTemp.append((theAddress.get("NickName") == null) ? "" : theAddress.get("NickName"));
-				sbTemp.append(";");
+				sbTemp.append(";;"); // additional names
 				sbTemp.append((theAddress.get("NickName") == null) ? "" : theAddress.get("NickName"));
 				sbTemp.append(";;"); // honorific prefixes and suffixes
 				if (!sbTemp.toString().isEmpty()) {
 					sbFileContent.append(getLine("N", sbTemp.toString(), ","));
 				}
+
+				// nickname
+				sbFileContent.append(getLine("NICKNAME", theAddress.get("NickName"), ","));
+				
 				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
