@@ -3,6 +3,7 @@ package de.edgesoft.abook2vcf;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
+import java.util.List;
 
 import mozilla.thunderbird.Address;
 import mozilla.thunderbird.AddressBook;
@@ -89,28 +90,16 @@ public class ABook2VCF extends AbstractMainClass {
 	public static void convertABook(String theInFile, String theOutFile, int theVCFCount) throws ABookException {
 		
 		try {
-			AddressBook theAddressBook = loadABook(theInFile);
-			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddresses().size()));
+			List<Address> theAddresses = loadAdresses(theInFile);
+			printMessage(MessageFormat.format("address count: {0, number}", theAddresses.size()));
 
-			int iMaxFileCount = 1;
-			if (theVCFCount != 0) {
-				iMaxFileCount = theAddressBook.getAddresses().size() / theVCFCount;
-				if ((theAddressBook.getAddresses().size() % theVCFCount) > 0) {
-					iMaxFileCount++;
-				}
-			}
-			printMessage(MessageFormat.format("file count: {0, number}", iMaxFileCount));
-			
-			String sOutFilePattern = theOutFile;
-			if (!sOutFilePattern.endsWith(VCF_FILE_EXTENSION)) {
-				sOutFilePattern += VCF_FILE_EXTENSION;
-			}
-			sOutFilePattern = sOutFilePattern.replace(VCF_FILE_EXTENSION, String.format("%%0%dd%s", String.valueOf(iMaxFileCount).length(), VCF_FILE_EXTENSION));
-			
+			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
+
+			// address loop
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
 			
-			for (Address theAddress : theAddressBook.getAddresses()) {
+			for (Address theAddress : theAddresses) {
 				printMessage(MessageFormat.format("file: {0}", String.format(sOutFilePattern, iFileCount)));
 				iAddressesInFile++;
 			}
@@ -123,6 +112,37 @@ public class ABook2VCF extends AbstractMainClass {
 	}
 	
 	/**
+	 * Returns the output file pattern.
+	 * 
+	 * @param theAddressCount number of addresses
+	 * @param theOutFile output file
+	 * @param theVCFCount max vcard count
+	 * 
+	 * @throws ABookException if an error occurred during execution
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	public static String getOutFilePattern(int theAddressCount, String theOutFile, int theVCFCount) {
+		
+		int iMaxFileCount = 1;
+		if (theVCFCount != 0) {
+			iMaxFileCount = theAddressCount / theVCFCount;
+			if ((theAddressCount % theVCFCount) > 0) {
+				iMaxFileCount++;
+			}
+		}
+		
+		String sOutFilePattern = theOutFile;
+		if (!sOutFilePattern.endsWith(VCF_FILE_EXTENSION)) {
+			sOutFilePattern += VCF_FILE_EXTENSION;
+		}
+		sOutFilePattern = sOutFilePattern.replace(VCF_FILE_EXTENSION, String.format("%%0%dd%s", String.valueOf(iMaxFileCount).length(), VCF_FILE_EXTENSION));
+
+		return sOutFilePattern;
+	}
+	
+	/**
 	 * Loads the address book.
 	 * 
 	 * @param theInFile input file
@@ -132,7 +152,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	private static AddressBook loadABook(String theInFile) throws ABookException {
+	private static List<Address> loadAdresses(String theInFile) throws ABookException {
 		AddressBook theAddressBook = new AddressBook();
 		
 		File fleABook = new File(theInFile);
@@ -168,7 +188,7 @@ public class ABook2VCF extends AbstractMainClass {
 			throw new ABookException(e.getLocalizedMessage());
 		}
 		
-		return theAddressBook;
+		return theAddressBook.getAddresses();
 		
 	}
 	
