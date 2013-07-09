@@ -207,7 +207,7 @@ public class ABook2VCF extends AbstractMainClass {
 				} else {
 					sbTemp.append(theAddress.get("DisplayName"));
 				}
-				if (!sbTemp.toString().isEmpty()) {
+				if (!sbTemp.toString().trim().isEmpty()) {
 					sbFileContent.append(getLine("FN", sbTemp.toString(), ","));
 				}
 				
@@ -219,12 +219,23 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append(";;"); // additional names
 				sbTemp.append((theAddress.get("NickName") == null) ? "" : theAddress.get("NickName"));
 				sbTemp.append(";;"); // honorific prefixes and suffixes
-				if (!sbTemp.toString().isEmpty()) {
+				if (!sbTemp.toString().equals(";;;;;")) {
 					sbFileContent.append(getLine("N", sbTemp.toString(), ","));
 				}
 
 				// nickname
 				sbFileContent.append(getLine("NICKNAME", theAddress.get("NickName"), ","));
+				
+				// org
+				sbTemp = new StringBuffer();
+				sbTemp.append((theAddress.get("Company") == null) ? "" : theAddress.get("Company"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("Department") == null) ? "" : theAddress.get("Department"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("JobTitle") == null) ? "" : theAddress.get("JobTitle"));
+				if (!sbTemp.toString().equals(";;")) {
+					sbFileContent.append(getLine("ORG", sbTemp.toString(), ","));
+				}
 				
 				
 				// end
@@ -263,10 +274,10 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @since 0.1
 	 */
 	private static String getLine(String theName, String theContent, String theNewLine) {
-		if ((theContent == null) || theContent.isEmpty()) {
+		if ((theContent == null) || theContent.trim().isEmpty()) {
 			return "";
 		}
-		return String.format("%s:%s\n", theName, theContent.replace(",", "\\,").replace("\n", theNewLine).replace("\r", ""));
+		return String.format("%s:%s\n", theName, theContent.trim().replace(",", "\\,").replace("\n", theNewLine).replace("\r", ""));
 	}
 	
 	
