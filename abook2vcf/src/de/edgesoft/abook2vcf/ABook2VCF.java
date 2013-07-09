@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
-import mozilla.thunderbird.Address;
-import mozilla.thunderbird.AddressBook;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
 
@@ -118,13 +116,35 @@ public class ABook2VCF extends AbstractMainClass {
 	public static void writeVCards(List<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
 		
 		try {
-			// address loop
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
+			StringBuffer sbFileContent = null;
 			
 			for (Address theAddress : theAddresses) {
-				printMessage(MessageFormat.format("file: {0}", String.format(theOutFilePattern, iFileCount)));
+				
+				if (iAddressesInFile == 0) {
+					sbFileContent = new StringBuffer();
+				}
+				
+				sbFileContent.append("BEGIN:VCARD\n");
+				sbFileContent.append("VERSION:3.0\n");
+				sbFileContent.append(theAddress.getValue(AddressKeys.DISPLAY_NAME.getKey()));
+				sbFileContent.append("\n");
+				
+				printMessage(theAddress.getValue(AddressKeys.DISPLAY_NAME.getKey()));
+				
+				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
+				
+				if (iAddressesInFile == theVCFCount) {
+					writeFile(String.format(theOutFilePattern, iFileCount), sbFileContent.toString());
+					iAddressesInFile = 0;
+					iFileCount++;
+				}
+			}
+			
+			if (iAddressesInFile > 0) {
+				writeFile(String.format(theOutFilePattern, iFileCount), sbFileContent.toString());
 			}
 			
 		} catch (Exception e) {
@@ -174,7 +194,8 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @since 0.1
 	 */
 	private static List<Address> loadAdresses(String theInFile) throws ABookException {
-		AddressBook theAddressBook = new AddressBook();
+		
+		List<Address> lstAddresses = null;
 		
 		File fleABook = new File(theInFile);
 		
@@ -196,7 +217,7 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				printMessage(MessageFormat.format("reading abook file: ''{0}''", fleABook.getAbsoluteFile()));
 				
-				theAddressBook.load(stmABook);
+				lstAddresses = AddressBook.load(stmABook);
 				
 			} finally {
 				if (stmABook != null) {
@@ -209,7 +230,7 @@ public class ABook2VCF extends AbstractMainClass {
 			throw new ABookException(e.getLocalizedMessage());
 		}
 		
-		return theAddressBook.getAddresses();
+		return lstAddresses;
 		
 	}
 	
