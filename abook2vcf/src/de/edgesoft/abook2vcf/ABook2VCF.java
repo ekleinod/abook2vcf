@@ -186,6 +186,12 @@ public class ABook2VCF extends AbstractMainClass {
 					sbFileContent.append(String.format("ADR;TYPE=work:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
 				}
 				
+				// birthday
+				if ((theAddress.get("BirthYear") != null) && !theAddress.get("BirthYear").isEmpty()) {
+					sbFileContent.append(String.format("BDAY:%s%s%s\n", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")));
+				}
+				
+				// end
 				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
 				
