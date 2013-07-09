@@ -199,6 +199,18 @@ public class ABook2VCF extends AbstractMainClass {
 				sbFileContent.append(getLine("EMAIL;TYPE=second", theAddress.get("SecondEmail"), "\\n"));
 				sbFileContent.append(getLine("EMAIL;TYPE=default", theAddress.get("DefaultEmail"), "\\n"));
 				
+				// formatted name
+				sbTemp = new StringBuffer();
+				if ((theAddress.get("DisplayName") == null) || theAddress.get("DisplayName").isEmpty()) {
+					sbTemp.append((theAddress.get("FirstName") == null) ? "" : theAddress.get("FirstName") + " ");
+					sbTemp.append((theAddress.get("LastName") == null) ? "" : theAddress.get("LastName"));
+				} else {
+					sbTemp.append(theAddress.get("DisplayName"));
+				}
+				if (!sbTemp.toString().isEmpty()) {
+					sbFileContent.append(getLine("FN", sbTemp.toString(), ","));
+				}
+				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
 				sbFileContent.append("\n");
@@ -238,7 +250,7 @@ public class ABook2VCF extends AbstractMainClass {
 		if ((theContent == null) || theContent.isEmpty()) {
 			return "";
 		}
-		return String.format("%s:%s\n", theName, theContent.replace("\n", theNewLine).replace("\r", ""));
+		return String.format("%s:%s\n", theName, theContent.replace(",", "\\,").replace("\n", theNewLine).replace("\r", ""));
 	}
 	
 	
