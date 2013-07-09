@@ -88,7 +88,7 @@ public class ABook2VCF extends AbstractMainClass {
 	public static void convertABook(String theInFile, String theOutFile, int theVCFCount) throws ABookException {
 		
 		try {
-			List<Address> theAddresses = loadAdresses(theInFile);
+			List<mozilla.thunderbird.Address> theAddresses = loadAdresses(theInFile);
 			printMessage(MessageFormat.format("address count: {0, number}", theAddresses.size()));
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
@@ -113,14 +113,14 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(List<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
+	public static void writeVCards(List<mozilla.thunderbird.Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
 		
 		try {
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
 			StringBuffer sbFileContent = null;
 			
-			for (Address theAddress : theAddresses) {
+			for (mozilla.thunderbird.Address theAddress : theAddresses) {
 				
 				if (iAddressesInFile == 0) {
 					sbFileContent = new StringBuffer();
@@ -128,10 +128,10 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				sbFileContent.append("BEGIN:VCARD\n");
 				sbFileContent.append("VERSION:3.0\n");
-				sbFileContent.append(theAddress.getValue(AddressKeys.DISPLAY_NAME.getKey()));
+				sbFileContent.append(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
 				sbFileContent.append("\n");
 				
-				printMessage(theAddress.getValue(AddressKeys.DISPLAY_NAME.getKey()));
+				printMessage(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
 				
 				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
@@ -193,9 +193,9 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	private static List<Address> loadAdresses(String theInFile) throws ABookException {
+	private static List<mozilla.thunderbird.Address> loadAdresses(String theInFile) throws ABookException {
 		
-		List<Address> lstAddresses = null;
+		mozilla.thunderbird.AddressBook theAddressBook = new mozilla.thunderbird.AddressBook();
 		
 		File fleABook = new File(theInFile);
 		
@@ -217,7 +217,7 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				printMessage(MessageFormat.format("reading abook file: ''{0}''", fleABook.getAbsoluteFile()));
 				
-				lstAddresses = AddressBook.load(stmABook);
+				theAddressBook.load(stmABook);
 				
 			} finally {
 				if (stmABook != null) {
@@ -230,7 +230,7 @@ public class ABook2VCF extends AbstractMainClass {
 			throw new ABookException(e.getLocalizedMessage());
 		}
 		
-		return lstAddresses;
+		return theAddressBook.getAddresses();
 		
 	}
 	

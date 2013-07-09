@@ -2,11 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/jmork-1.0.4/jmork-1.0.4.jar" sourcepath="lib/jmork-1.0.4/jmork-1.0.4-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/abook2vcf/lib/jmork-1.0.4/jmork-1.0.4-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmork"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
