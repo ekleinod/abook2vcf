@@ -95,15 +95,37 @@ public class ABook2VCF extends AbstractMainClass {
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
 
+			writeVCards(theAddresses, sOutFilePattern, theVCFCount);
+			
+		} catch (Exception e) {
+			throw new ABookException(e.getLocalizedMessage());
+		}
+		
+	}
+	
+	/**
+	 * Write vcf file(s).
+	 * 
+	 * @param theAddresses list of addresses
+	 * @param theOutFilePattern output file pattern
+	 * @param theVCFCount max vcard count
+	 * 
+	 * @throws ABookException if an error occurred during execution
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	public static void writeVCards(List<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
+		
+		try {
 			// address loop
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
 			
 			for (Address theAddress : theAddresses) {
-				printMessage(MessageFormat.format("file: {0}", String.format(sOutFilePattern, iFileCount)));
+				printMessage(MessageFormat.format("file: {0}", String.format(theOutFilePattern, iFileCount)));
 				iAddressesInFile++;
 			}
-			
 			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
@@ -123,21 +145,20 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static String getOutFilePattern(int theAddressCount, String theOutFile, int theVCFCount) {
-		
-		int iMaxFileCount = 1;
-		if (theVCFCount != 0) {
-			iMaxFileCount = theAddressCount / theVCFCount;
-			if ((theAddressCount % theVCFCount) > 0) {
-				iMaxFileCount++;
-			}
-		}
+	private static String getOutFilePattern(int theAddressCount, String theOutFile, int theVCFCount) {
 		
 		String sOutFilePattern = theOutFile;
 		if (!sOutFilePattern.endsWith(VCF_FILE_EXTENSION)) {
 			sOutFilePattern += VCF_FILE_EXTENSION;
 		}
-		sOutFilePattern = sOutFilePattern.replace(VCF_FILE_EXTENSION, String.format("%%0%dd%s", String.valueOf(iMaxFileCount).length(), VCF_FILE_EXTENSION));
+		
+		if (theVCFCount != 0) {
+			int iMaxFileCount = theAddressCount / theVCFCount;
+			if ((theAddressCount % theVCFCount) > 0) {
+				iMaxFileCount++;
+			}
+			sOutFilePattern = sOutFilePattern.replace(VCF_FILE_EXTENSION, String.format("%%0%dd%s", String.valueOf(iMaxFileCount).length(), VCF_FILE_EXTENSION));
+		}
 
 		return sOutFilePattern;
 	}
