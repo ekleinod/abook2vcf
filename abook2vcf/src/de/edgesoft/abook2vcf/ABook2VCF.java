@@ -169,6 +169,23 @@ public class ABook2VCF extends AbstractMainClass {
 					sbFileContent.append(String.format("ADR;TYPE=home:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
 				}
 				
+				// work address
+				sbTemp = new StringBuffer();
+				sbTemp.append(";;"); // PO Box; extended address
+				sbTemp.append((theAddress.get("WorkAddress") == null) ? "" : theAddress.get("WorkAddress"));
+				sbTemp.append(((theAddress.get("WorkAddress2") == null) || theAddress.get("WorkAddress2").isEmpty()) ? "" : "," + theAddress.get("WorkAddress2"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("WorkCity") == null) ? "" : theAddress.get("WorkCity"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("WorkState") == null) ? "" : theAddress.get("WorkState"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("WorkZipCode") == null) ? "" : theAddress.get("WorkZipCode"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("WorkCountry") == null) ? "" : theAddress.get("WorkCountry"));
+				if (!sbTemp.toString().equals(";;;;;;")) {
+					sbFileContent.append(String.format("ADR;TYPE=work:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
+				}
+				
 				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
 				
