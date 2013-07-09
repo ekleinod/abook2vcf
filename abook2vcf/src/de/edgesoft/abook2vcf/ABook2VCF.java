@@ -89,6 +89,30 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @since 0.1
 	 */
 	public static void convertABook(String theInFile, String theOutFile, String theOutDir, int theVCFCount) throws ABookException {
+		
+		try {
+			AddressBook theAddressBook = loadABook(theInFile);
+			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddresses().size()));
+			
+		} catch (Exception e) {
+			throw new ABookException(e.getLocalizedMessage());
+		}
+		
+	}
+	
+	/**
+	 * Loads the address book.
+	 * 
+	 * @param theInFile input file
+	 * 
+	 * @throws ABookException if an error occured during execution
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	private static AddressBook loadABook(String theInFile) throws ABookException {
+		AddressBook theAddressBook = new AddressBook();
+		
 		File fleABook = new File(theInFile);
 		
 		if (!fleABook.exists()) {
@@ -104,8 +128,6 @@ public class ABook2VCF extends AbstractMainClass {
 		try {
 			FileInputStream stmABook = null;
 			
-			AddressBook theAddressBook = new AddressBook();
-			
 			try {
 				stmABook = new FileInputStream(fleABook);
 				
@@ -120,12 +142,11 @@ public class ABook2VCF extends AbstractMainClass {
 				}
 			}
 			
-			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddresses().size()));
-			
-			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
 		}
+		
+		return theAddressBook;
 		
 	}
 	
