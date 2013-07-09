@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
 
+import mozilla.thunderbird.Address;
 import mozilla.thunderbird.AddressBook;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
@@ -26,6 +27,9 @@ public class ABook2VCF extends AbstractMainClass {
 	
 	/** Argument vcard count. */
 	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "number of vcards per file (default: 0 = unlimited)", false);
+	
+	/** Vcard file extension. */
+	private final static String VCF_FILE_EXTENSION = ".vcf";
 	
 	/**
 	 * Main method, called from command line.
@@ -77,7 +81,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @param theOutFile output file
 	 * @param theVCFCount max vcard count
 	 * 
-	 * @throws ABookException if an error occured during execution
+	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
@@ -87,7 +91,29 @@ public class ABook2VCF extends AbstractMainClass {
 		try {
 			AddressBook theAddressBook = loadABook(theInFile);
 			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddresses().size()));
+
+			int iMaxFileCount = 1;
+			if (theVCFCount != 0) {
+				iMaxFileCount = theAddressBook.getAddresses().size() / theVCFCount;
+				if ((theAddressBook.getAddresses().size() % theVCFCount) > 0) {
+					iMaxFileCount++;
+				}
+			}
+			printMessage(MessageFormat.format("file count: {0, number}", iMaxFileCount));
 			
+			String sOutFilePattern = theOutFile;
+			if (!sOutFilePattern.endsWith(VCF_FILE_EXTENSION)) {
+				sOutFilePattern += VCF_FILE_EXTENSION;
+			}
+			sOutFilePattern = sOutFilePattern.replace(VCF_FILE_EXTENSION, String.format("%%0%dd%s", String.valueOf(iMaxFileCount).length(), VCF_FILE_EXTENSION));
+			
+			int iFileCount = 1;
+			int iAddressesInFile = 0;
+			
+			for (Address theAddress : theAddressBook.getAddresses()) {
+				printMessage(MessageFormat.format("file: {0}", String.format(sOutFilePattern, iFileCount)));
+				iAddressesInFile++;
+			}
 			
 			
 		} catch (Exception e) {
@@ -101,7 +127,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * 
 	 * @param theInFile input file
 	 * 
-	 * @throws ABookException if an error occured during execution
+	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1

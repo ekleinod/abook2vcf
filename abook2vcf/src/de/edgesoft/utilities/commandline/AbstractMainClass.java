@@ -3,6 +3,7 @@ package de.edgesoft.utilities.commandline;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -130,6 +131,14 @@ public abstract class AbstractMainClass {
 		if (fleOutput.getParentFile() != null) {
 			fleOutput.getParentFile().mkdirs();
 		}
+
+		if (fleOutput.exists() && !fleOutput.isFile()) {
+			throw new IOException(MessageFormat.format("File ''{0}'' is no file (maybe a directory?)", theFileName));
+		}
+		if (fleOutput.exists() && !fleOutput.canWrite()) {
+			throw new IOException(MessageFormat.format("File ''{0}'' is not writeable.", theFileName));
+		}
+		
 		try {
 			wrtOutput = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fleOutput), "UTF-8"));
 			wrtOutput.write(theContent);
