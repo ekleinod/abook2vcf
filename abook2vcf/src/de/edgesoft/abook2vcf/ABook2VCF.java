@@ -191,8 +191,13 @@ public class ABook2VCF extends AbstractMainClass {
 					sbFileContent.append(getLine("BDAY", String.format("%s%s%s\n", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")), "\\n"));
 				}
 				
-				// category
+				// categories
 				sbFileContent.append(getLine("CATEGORIES", theAddress.get("Category"), "\\n"));
+				
+				// email
+				sbFileContent.append(getLine("EMAIL;TYPE=primary", theAddress.get("PrimaryEmail"), "\\n"));
+				sbFileContent.append(getLine("EMAIL;TYPE=second", theAddress.get("SecondEmail"), "\\n"));
+				sbFileContent.append(getLine("EMAIL;TYPE=default", theAddress.get("DefaultEmail"), "\\n"));
 				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
