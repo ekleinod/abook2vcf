@@ -93,11 +93,27 @@ public class ABook2VCF extends AbstractMainClass {
 		
 		try {
 			List<Address> theAddresses = loadAdresses(theInFile);
-			printMessage(MessageFormat.format("address count: {0, number}", theAddresses.size()));
+			StringBuffer sbRemovedDoubles = new StringBuffer();
+			Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
+			for (Address theAddress : theAddresses) {
+				if (!setAddresses.add(theAddress)) {
+					sbRemovedDoubles.append(theAddress.get("DisplayName"));
+					sbRemovedDoubles.append(";");
+					sbRemovedDoubles.append(theAddress.get("FirstName"));
+					sbRemovedDoubles.append(";");
+					sbRemovedDoubles.append(theAddress.get("LastName"));
+					sbRemovedDoubles.append(";");
+					sbRemovedDoubles.append(theAddress.get("PrimaryEmail"));
+					sbRemovedDoubles.append("\n");
+				}
+			}
+			writeFile(theOutFile + ".doubles.txt", sbRemovedDoubles.toString());
+			
+			printMessage(MessageFormat.format("address count: {0, number}", setAddresses.size()));
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
 
-			writeVCards(theAddresses, sOutFilePattern, theVCFCount);
+			writeVCards(setAddresses, sOutFilePattern, theVCFCount);
 			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
@@ -117,44 +133,41 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(List<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
-		
-		StringBuffer sbRemovedDoubles = new StringBuffer();
-		Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
-		for (Address theAddress : theAddresses) {
-			if (!setAddresses.add(theAddress)) {
-				sbRemovedDoubles.append(theAddress.get("DisplayName"));
-				sbRemovedDoubles.append(";");
-				sbRemovedDoubles.append(theAddress.get("FirstName"));
-				sbRemovedDoubles.append(";");
-				sbRemovedDoubles.append(theAddress.get("LastName"));
-				sbRemovedDoubles.append(";");
-				sbRemovedDoubles.append(theAddress.get("PrimaryEmail"));
-				sbRemovedDoubles.append("\n");
-			}
-		}
+	public static void writeVCards(Set<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
 		
 		try {
-			
-			writeFile(String.format(theOutFilePattern, 0) + ".doubles.txt", sbRemovedDoubles.toString());
-			
 			
 			int iFileCount = 1;
 			int iAddressesInFile = 0;
 			StringBuffer sbFileContent = null;
+			StringBuffer sbTemp = null;
 			
-			for (Address theAddress : setAddresses) {
+			for (Address theAddress : theAddresses) {
 				
 				if (iAddressesInFile == 0) {
 					sbFileContent = new StringBuffer();
 				}
 				
+				// start
 				sbFileContent.append("BEGIN:VCARD\n");
 				sbFileContent.append("VERSION:3.0\n");
-				sbFileContent.append(theAddress.get("DisplayName"));
-				sbFileContent.append("\n");
 				
-				printMessage(theAddress.get("DisplayName"));
+				// home address
+				sbTemp = new StringBuffer();
+				sbTemp.append(";;"); // PO Box; extended address
+				sbTemp.append((theAddress.get("HomeAddress") == null) ? "" : theAddress.get("HomeAddress"));
+				sbTemp.append(((theAddress.get("HomeAddress2") == null) || theAddress.get("HomeAddress2").isEmpty()) ? "" : "," + theAddress.get("HomeAddress2"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("HomeCity") == null) ? "" : theAddress.get("HomeCity"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("HomeState") == null) ? "" : theAddress.get("HomeState"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("HomeZipCode") == null) ? "" : theAddress.get("HomeZipCode"));
+				sbTemp.append(";");
+				sbTemp.append((theAddress.get("HomeCountry") == null) ? "" : theAddress.get("HomeCountry"));
+				if (!sbTemp.toString().equals(";;;;;;")) {
+					sbFileContent.append(String.format("ADR;TYPE=home:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
+				}
 				
 				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
