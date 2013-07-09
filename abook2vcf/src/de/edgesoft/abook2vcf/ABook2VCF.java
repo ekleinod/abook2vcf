@@ -128,10 +128,10 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				sbFileContent.append("BEGIN:VCARD\n");
 				sbFileContent.append("VERSION:3.0\n");
-				sbFileContent.append(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
+				sbFileContent.append(theAddress.get("DisplayName"));
 				sbFileContent.append("\n");
 				
-				printMessage(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
+				printMessage(theAddress.get("DisplayName"));
 				
 				sbFileContent.append("END:VCARD\n\n");
 				iAddressesInFile++;
