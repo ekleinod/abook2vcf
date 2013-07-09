@@ -24,9 +24,6 @@ public class ABook2VCF extends AbstractMainClass {
 	/** Argument output file. */
 	private final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "output file (default: abook.vcf)", false);
 	
-	/** Argument output directory. */
-	private final static CommandOption OPT_OUTDIR = new CommandOption("d", "outputdir", true, "output directory (default: vcards)", false);
-	
 	/** Argument vcard count. */
 	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "number of vcards per file (default: 0 = unlimited)", false);
 	
@@ -43,7 +40,6 @@ public class ABook2VCF extends AbstractMainClass {
 		
 		addCommandOption(OPT_ABOOK);
 		addCommandOption(OPT_OUTFILE);
-		addCommandOption(OPT_OUTDIR);
 		addCommandOption(OPT_VCFCOUNT);
 		
 		init(args, ABook2VCF.class);
@@ -51,7 +47,6 @@ public class ABook2VCF extends AbstractMainClass {
 		try {
 			String sInFile = (getOptionValue(OPT_ABOOK) == null) ? "abook.mab" : getOptionValue(OPT_ABOOK);
 			String sOutFile = (getOptionValue(OPT_OUTFILE) == null) ? "abook.vcf" : getOptionValue(OPT_OUTFILE);
-			String sOutDir = (getOptionValue(OPT_OUTDIR) == null) ? "vcards" : getOptionValue(OPT_OUTDIR);
 			int iVCFCount = 0;
 			try {
 				iVCFCount = Integer.parseInt(getOptionValue(OPT_VCFCOUNT));
@@ -62,7 +57,7 @@ public class ABook2VCF extends AbstractMainClass {
 				iVCFCount = 0;
 			}
 			
-			convertABook(sInFile, sOutFile, sOutDir, iVCFCount);
+			convertABook(sInFile, sOutFile, iVCFCount);
 			
 		} catch (Exception e) {
 			printError("");
@@ -80,19 +75,20 @@ public class ABook2VCF extends AbstractMainClass {
 	 * 
 	 * @param theInFile input file
 	 * @param theOutFile output file
-	 * @param theOutDir output directory
-	 * @param theVCFCount max vcard count3
+	 * @param theVCFCount max vcard count
 	 * 
 	 * @throws ABookException if an error occured during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void convertABook(String theInFile, String theOutFile, String theOutDir, int theVCFCount) throws ABookException {
+	public static void convertABook(String theInFile, String theOutFile, int theVCFCount) throws ABookException {
 		
 		try {
 			AddressBook theAddressBook = loadABook(theInFile);
 			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddresses().size()));
+			
+			
 			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
