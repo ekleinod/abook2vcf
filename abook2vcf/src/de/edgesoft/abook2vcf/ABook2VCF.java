@@ -149,8 +149,8 @@ public class ABook2VCF extends AbstractMainClass {
 				}
 				
 				// start
-				sbFileContent.append("BEGIN:VCARD\n");
-				sbFileContent.append("VERSION:3.0\n");
+				sbFileContent.append(getLine("BEGIN", "VCARD", "\\n"));
+				sbFileContent.append(getLine("VERSION", "3.0", "\\n"));
 				
 				// home address
 				sbTemp = new StringBuffer();
@@ -166,7 +166,7 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("HomeCountry") == null) ? "" : theAddress.get("HomeCountry"));
 				if (!sbTemp.toString().equals(";;;;;;")) {
-					sbFileContent.append(String.format("ADR;TYPE=home:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
+					sbFileContent.append(getLine("ADR;TYPE=home", sbTemp.toString(), ","));
 				}
 				
 				// work address
@@ -183,16 +183,20 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("WorkCountry") == null) ? "" : theAddress.get("WorkCountry"));
 				if (!sbTemp.toString().equals(";;;;;;")) {
-					sbFileContent.append(String.format("ADR;TYPE=work:%s\n", sbTemp.toString().replace("\n", ",").replace("\r", "")));
+					sbFileContent.append(getLine("ADR;TYPE=work", sbTemp.toString(), ","));
 				}
 				
 				// birthday
 				if ((theAddress.get("BirthYear") != null) && !theAddress.get("BirthYear").isEmpty()) {
-					sbFileContent.append(String.format("BDAY:%s%s%s\n", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")));
+					sbFileContent.append(getLine("BDAY", String.format("%s%s%s\n", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")), "\\n"));
 				}
 				
+				// category
+				sbFileContent.append(getLine("CATEGORIES", theAddress.get("Category"), "\\n"));
+				
 				// end
-				sbFileContent.append("END:VCARD\n\n");
+				sbFileContent.append(getLine("END", "VCARD", "\\n"));
+				sbFileContent.append("\n");
 				iAddressesInFile++;
 				
 				if (iAddressesInFile == theVCFCount) {
@@ -211,6 +215,27 @@ public class ABook2VCF extends AbstractMainClass {
 		}
 		
 	}
+
+
+	/**
+	 * Returns a formatted VCard line.
+	 * 
+	 * @param theName name of the line
+	 * @param theContent content of the line
+	 * @param theNewLine new line replacement
+	 * 
+	 * @return formatted line
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	private static String getLine(String theName, String theContent, String theNewLine) {
+		if ((theContent == null) || theContent.isEmpty()) {
+			return "";
+		}
+		return String.format("%s:%s\n", theName, theContent.replace("\n", theNewLine).replace("\r", ""));
+	}
+	
 	
 	/**
 	 * Returns the output file pattern.
