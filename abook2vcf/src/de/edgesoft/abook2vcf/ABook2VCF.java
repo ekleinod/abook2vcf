@@ -9,6 +9,8 @@ import java.util.TreeSet;
 
 import mozilla.thunderbird.Address;
 import mozilla.thunderbird.AddressBook;
+import de.edgesoft.abook2vcf.jmork.AddressComparator;
+import de.edgesoft.abook2vcf.jmork.AddressKeys;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
 
@@ -112,13 +114,13 @@ public class ABook2VCF extends AbstractMainClass {
 			Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
 			for (Address theAddress : theAddresses) {
 				if (!setAddresses.add(theAddress)) {
-					sbRemovedDoubles.append(theAddress.get("DisplayName"));
+					sbRemovedDoubles.append(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
 					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get("FirstName"));
+					sbRemovedDoubles.append(theAddress.get(AddressKeys.FIRST_NAME.getKey()));
 					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get("LastName"));
+					sbRemovedDoubles.append(theAddress.get(AddressKeys.LAST_NAME.getKey()));
 					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get("PrimaryEmail"));
+					sbRemovedDoubles.append(theAddress.get(AddressKeys.PRIMARY_EMAIL.getKey()));
 					sbRemovedDoubles.append("\n");
 				}
 			}

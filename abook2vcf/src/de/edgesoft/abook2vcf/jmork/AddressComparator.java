@@ -1,4 +1,4 @@
-package de.edgesoft.abook2vcf;
+package de.edgesoft.abook2vcf.jmork;
 
 import java.util.Comparator;
 
