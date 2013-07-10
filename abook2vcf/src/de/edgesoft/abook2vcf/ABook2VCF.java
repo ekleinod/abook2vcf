@@ -181,7 +181,7 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append((theAddress.get("HomeZipCode") == null) ? "" : theAddress.get("HomeZipCode"));
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("HomeCountry") == null) ? "" : theAddress.get("HomeCountry"));
-				if (!sbTemp.toString().equals(";;;;;;")) {
+				if (!sbTemp.toString().trim().equals(";;;;;;")) {
 					sbFileContent.append(getLine("ADR;TYPE=home", sbTemp.toString(), ","));
 				}
 				
@@ -198,13 +198,13 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append((theAddress.get("WorkZipCode") == null) ? "" : theAddress.get("WorkZipCode"));
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("WorkCountry") == null) ? "" : theAddress.get("WorkCountry"));
-				if (!sbTemp.toString().equals(";;;;;;")) {
+				if (!sbTemp.toString().trim().equals(";;;;;;")) {
 					sbFileContent.append(getLine("ADR;TYPE=work", sbTemp.toString(), ","));
 				}
 				
 				// birthday
 				if ((theAddress.get("BirthYear") != null) && !theAddress.get("BirthYear").isEmpty()) {
-					sbFileContent.append(getLine("BDAY", String.format("%s%s%s\n", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")), "\\n"));
+					sbFileContent.append(getLine("BDAY", String.format("%s%s%s", theAddress.get("BirthYear"), theAddress.get("BirthMonth"), theAddress.get("BirthDay")), "\\n"));
 				}
 				
 				// categories
@@ -235,7 +235,7 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append(";;"); // additional names
 				sbTemp.append((theAddress.get("NickName") == null) ? "" : theAddress.get("NickName"));
 				sbTemp.append(";;"); // honorific prefixes and suffixes
-				if (!sbTemp.toString().equals(";;;;;")) {
+				if (!sbTemp.toString().trim().equals(";;;;;")) {
 					sbFileContent.append(getLine("N", sbTemp.toString(), ","));
 				}
 
@@ -249,7 +249,7 @@ public class ABook2VCF extends AbstractMainClass {
 				sbTemp.append((theAddress.get("Department") == null) ? "" : theAddress.get("Department"));
 				sbTemp.append(";");
 				sbTemp.append((theAddress.get("JobTitle") == null) ? "" : theAddress.get("JobTitle"));
-				if (!sbTemp.toString().equals(";;")) {
+				if (!sbTemp.toString().trim().equals(";;")) {
 					sbFileContent.append(getLine("ORG", sbTemp.toString(), ","));
 				}
 				
@@ -267,6 +267,19 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				// title
 				sbFileContent.append(getLine("TITLE", theAddress.get("JobTitle"), "\\n"));
+				
+				// url
+				sbTemp = new StringBuffer();
+				sbTemp.append((theAddress.get("WebPage1") == null) ? "" : theAddress.get("WebPage1"));
+				if ((theAddress.get("WebPage2") != null) && !theAddress.get("WebPage2").isEmpty()) {
+					if (!sbTemp.toString().isEmpty()) {
+						sbTemp.append(",");
+					}
+					sbTemp.append((theAddress.get("WebPage2") == null) ? "" : theAddress.get("WebPage2"));
+				}
+				if (!sbTemp.toString().trim().equals(";")) {
+					sbFileContent.append(getLine("URL", sbTemp.toString(), ","));
+				}
 				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
@@ -307,7 +320,7 @@ public class ABook2VCF extends AbstractMainClass {
 		if ((theContent == null) || theContent.trim().isEmpty()) {
 			return "";
 		}
-		return String.format("%s:%s\n", theName, theContent.trim().replace(",", "\\,").replace("\n", theNewLine).replace("\r", ""));
+		return String.format("%s:%s\n", theName, theContent.trim().replace("\n", theNewLine).replace("\r", ""));
 	}
 	
 	
