@@ -51,10 +51,10 @@ public class CommandOption {
 	 */
 	public String getUsage() {
 		return MessageFormat.format((getOption().isRequired()) ? "{0}" : "[{0}]", 
-				MessageFormat.format("[-{0}|-{1}] {2}",
+				MessageFormat.format("[-{0}|--{1}] {2}",
 						getOption().getOpt(),
 						getOption().getLongOpt(),
-						(getOption().hasArg()) ? getOption().getDescription() : ""));
+						getOption().getDescription()));
 	}
 	
 }

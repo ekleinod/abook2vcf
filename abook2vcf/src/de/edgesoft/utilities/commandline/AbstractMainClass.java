@@ -81,7 +81,7 @@ public abstract class AbstractMainClass {
 	/**
 	 * Returns value of given option.
 	 * 
-	 * @param theOptionKey key of the option
+	 * @param theCommandOption option
 	 * @return value
 	 *  
 	 * @version 0.1
@@ -89,6 +89,19 @@ public abstract class AbstractMainClass {
 	 */
 	public static String getOptionValue(CommandOption theCommandOption) {
 		return theCommandLine.getOptionValue(theCommandOption.getOption().getOpt());
+	}
+
+	/**
+	 * Returns if given option is stated.
+	 * 
+	 * @param theCommandOption option
+	 * @return if option in command line?
+	 *  
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	public static boolean hasOption(CommandOption theCommandOption) {
+		return theCommandLine.hasOption(theCommandOption.getOption().getOpt());
 	}
 
 	/**

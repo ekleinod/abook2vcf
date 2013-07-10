@@ -3,6 +3,8 @@ package de.edgesoft.abook2vcf;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -10,7 +12,6 @@ import java.util.TreeSet;
 import mozilla.thunderbird.Address;
 import mozilla.thunderbird.AddressBook;
 import de.edgesoft.abook2vcf.jmork.AddressComparator;
-import de.edgesoft.abook2vcf.jmork.AddressKeys;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
 
@@ -25,16 +26,22 @@ import de.edgesoft.utilities.commandline.CommandOption;
 public class ABook2VCF extends AbstractMainClass {
 
 	/** Argument input file. */
-	private final static CommandOption OPT_ABOOK = new CommandOption("i", "input", true, "inputfile (default: abook.mab)", false);
+	private final static CommandOption OPT_ABOOK = new CommandOption("i", "input", true, "<inputfile> (default: abook.mab)", false);
 	
 	/** Argument output file. */
-	private final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "output file (default: abook.vcf)", false);
+	private final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "<output file> (default: abook.vcf)", false);
 	
 	/** Argument vcard count. */
-	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "number of vcards per file (default: 0 = unlimited)", false);
+	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "<#> (number of vcards per file, default: 0 = unlimited)", false);
 	
 	/** Argument vcard version. */
-	private final static CommandOption OPT_VERSION = new CommandOption("v", "version", true, "vcard version (default: 3.0)", false);
+	private final static CommandOption OPT_VERSION = new CommandOption("v", "version", true, "<#.#> (vcard version, default: 3.0)", false);
+	
+	/** Argument doubles. */
+	private final static CommandOption OPT_DOUBLES = new CommandOption("d", "doubles", false, "(write doubles' vcards)", false);
+	
+	/** Argument text dump. */
+	private final static CommandOption OPT_TEXTDUMP = new CommandOption("t", "textdump", false, "(write text dump)", false);
 	
 	/** Vcard file extension. */
 	private final static String VCF_FILE_EXTENSION = ".vcf";
@@ -60,16 +67,15 @@ public class ABook2VCF extends AbstractMainClass {
 		addCommandOption(OPT_OUTFILE);
 		addCommandOption(OPT_VCFCOUNT);
 		addCommandOption(OPT_VERSION);
+		addCommandOption(OPT_DOUBLES);
+		addCommandOption(OPT_TEXTDUMP);
 		
 		init(args, ABook2VCF.class);
 		
 		try {
 			String sInFile = (getOptionValue(OPT_ABOOK) == null) ? "abook.mab" : getOptionValue(OPT_ABOOK);
 			String sOutFile = (getOptionValue(OPT_OUTFILE) == null) ? "abook.vcf" : getOptionValue(OPT_OUTFILE);
-			String sVersion = (getOptionValue(OPT_VERSION) == null) ? VERSION_3 : getOptionValue(OPT_VERSION);
-			if (!sVersion.equals(VERSION_3) && !sVersion.equals(VERSION_4)) {
-				sVersion = VERSION_3;
-			}
+			
 			int iVCFCount = 0;
 			try {
 				iVCFCount = Integer.parseInt(getOptionValue(OPT_VCFCOUNT));
@@ -80,7 +86,15 @@ public class ABook2VCF extends AbstractMainClass {
 				iVCFCount = 0;
 			}
 			
-			convertABook(sInFile, sOutFile, iVCFCount, sVersion);
+			String sVersion = (getOptionValue(OPT_VERSION) == null) ? VERSION_3 : getOptionValue(OPT_VERSION);
+			if (!sVersion.equals(VERSION_3) && !sVersion.equals(VERSION_4)) {
+				sVersion = VERSION_3;
+			}
+
+			boolean bWriteDoubles = hasOption(OPT_DOUBLES);
+			boolean bWriteTextDump = hasOption(OPT_TEXTDUMP);
+			
+			convertABook(sInFile, sOutFile, iVCFCount, sVersion, bWriteDoubles, bWriteTextDump);
 			
 		} catch (Exception e) {
 			printError("");
@@ -100,37 +114,41 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @param theOutFile output file
 	 * @param theVCFCount max vcard count
 	 * @param theVersion vcard version
+	 * @param bWriteDoubles write doubles' vcards?
+	 * @param bWriteTextDump write text dump?
 	 * 
 	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion) throws ABookException {
+	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion, boolean bWriteDoubles, boolean bWriteTextDump) throws ABookException {
 		
 		try {
 			List<Address> theAddresses = loadAdresses(theInFile);
-			StringBuffer sbRemovedDoubles = new StringBuffer();
 			Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
+			List<Address> lstDoubles = new ArrayList<Address>();
 			for (Address theAddress : theAddresses) {
 				if (!setAddresses.add(theAddress)) {
-					sbRemovedDoubles.append(theAddress.get(AddressKeys.DISPLAY_NAME.getKey()));
-					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get(AddressKeys.FIRST_NAME.getKey()));
-					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get(AddressKeys.LAST_NAME.getKey()));
-					sbRemovedDoubles.append(";");
-					sbRemovedDoubles.append(theAddress.get(AddressKeys.PRIMARY_EMAIL.getKey()));
-					sbRemovedDoubles.append("\n");
+					lstDoubles.add(theAddress);
 				}
 			}
-			writeFile(theOutFile + ".doubles.txt", sbRemovedDoubles.toString());
 			
 			printMessage(MessageFormat.format("address count: {0, number}", setAddresses.size()));
+			printMessage(MessageFormat.format("double count: {0, number}", lstDoubles.size()));
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
 
 			writeVCards(setAddresses, sOutFilePattern, theVCFCount, theVersion);
+
+			if (bWriteDoubles) {
+				File fleTemp = new File(sOutFilePattern);
+				String sDoublePattern = String.format("double.%s", fleTemp.getName());
+				if (fleTemp.getParent() != null) {
+					sDoublePattern = String.format("%s%s%s", fleTemp.getParent(), System.getProperty("file.separator"), sDoublePattern);
+				}
+				writeVCards(lstDoubles, sDoublePattern, theVCFCount, theVersion);
+			}
 			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
@@ -151,7 +169,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(Set<Address> theAddresses, String theOutFilePattern, int theVCFCount, String theVersion) throws ABookException {
+	public static void writeVCards(Collection<Address> theAddresses, String theOutFilePattern, int theVCFCount, String theVersion) throws ABookException {
 		
 		try {
 			
