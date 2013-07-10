@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="de.edgesoft.abook2vcf.ABook2VCF"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--abook /home/ekleinod/working/rani/privates/PDA/abook.mab --outputfile /home/ekleinod/working/rani/privates/PDA/vcards/abook.vcf --count 0 --version 3.0 --doubles --textdump"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--abook /home/ekleinod/working/rani/privates/PDA/abook.mab --outputfile /home/ekleinod/working/rani/privates/PDA/vcards/abook.vcf --count 0 --version 3.0 --doubles --textdump --csvdump"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="abook2vcf"/>
 </launchConfiguration>

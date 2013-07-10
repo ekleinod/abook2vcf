@@ -44,6 +44,9 @@ public class ABook2VCF extends AbstractMainClass {
 	/** Argument text dump. */
 	private final static CommandOption OPT_TEXTDUMP = new CommandOption("t", "textdump", false, "(write text dump)", false);
 	
+	/** Argument csv dump. */
+	private final static CommandOption OPT_CSVDUMP = new CommandOption("s", "csvdump", false, "(write csv dump)", false);
+	
 	/** Vcard file extension. */
 	private final static String VCF_FILE_EXTENSION = ".vcf";
 	
@@ -70,6 +73,7 @@ public class ABook2VCF extends AbstractMainClass {
 		addCommandOption(OPT_VERSION);
 		addCommandOption(OPT_DOUBLES);
 		addCommandOption(OPT_TEXTDUMP);
+		addCommandOption(OPT_CSVDUMP);
 		
 		init(args, ABook2VCF.class);
 		
@@ -94,8 +98,9 @@ public class ABook2VCF extends AbstractMainClass {
 
 			boolean bWriteDoubles = hasOption(OPT_DOUBLES);
 			boolean bWriteTextDump = hasOption(OPT_TEXTDUMP);
+			boolean bWriteCsvDump = hasOption(OPT_CSVDUMP);
 			
-			convertABook(sInFile, sOutFile, iVCFCount, sVersion, bWriteDoubles, bWriteTextDump);
+			convertABook(sInFile, sOutFile, iVCFCount, sVersion, bWriteDoubles, bWriteTextDump, bWriteCsvDump);
 			
 		} catch (Exception e) {
 			printError("");
@@ -117,13 +122,14 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @param theVersion vcard version
 	 * @param bWriteDoubles write doubles' vcards?
 	 * @param bWriteTextDump write text dump?
+	 * @param bWriteCsvDump write csv dump?
 	 * 
 	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion, boolean bWriteDoubles, boolean bWriteTextDump) throws ABookException {
+	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion, boolean bWriteDoubles, boolean bWriteTextDump, boolean bWriteCsvDump) throws ABookException {
 		
 		try {
 			List<Address> theAddresses = loadAdresses(theInFile);
@@ -158,6 +164,15 @@ public class ABook2VCF extends AbstractMainClass {
 				}
 				sFileName = String.format("%s.dump.txt", sFileName);
 				writeTextDump(theAddresses, sFileName, theInFile);
+			}
+			
+			if (bWriteCsvDump) {
+				String sFileName = theOutFile;
+				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
+					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
+				}
+				sFileName = String.format("%s.dump.csv", sFileName);
+				writeCsvDump(theAddresses, sFileName);
 			}
 			
 		} catch (Exception e) {
@@ -471,6 +486,44 @@ public class ABook2VCF extends AbstractMainClass {
 				}
 				sbFileContent.append("----- end address -----\n\n");
 				
+			}
+			
+			writeFile(theFileName, sbFileContent.toString());
+			
+		} catch (Exception e) {
+			throw new ABookException(e.getLocalizedMessage());
+		}
+		
+	}
+
+	/**
+	 * Write csv dump.
+	 * 
+	 * @param theAddresses list of addresses
+	 * @param theFileName file name
+	 * 
+	 * @throws ABookException if an error occurred during execution
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	private static void writeCsvDump(Collection<Address> theAddresses, String theFileName) throws ABookException {
+		
+		try {
+			
+			StringBuffer sbFileContent = new StringBuffer();
+			
+			for (AddressKeys theAddressKey : AddressKeys.values()) {
+				sbFileContent.append(String.format("\"%s\";", theAddressKey.getKey()));
+			}
+			sbFileContent.append("\n");
+			
+			for (Address theAddress : theAddresses) {
+				for (AddressKeys theAddressKey : AddressKeys.values()) {
+					sbFileContent.append(String.format("\"%s\";", 
+							(theAddress.get(theAddressKey.getKey()) == null) ? "null" : theAddress.get(theAddressKey.getKey()).trim().replace("\n", "\\n").replace("\r", "")));
+				}
+				sbFileContent.append("\n");
 			}
 			
 			writeFile(theFileName, sbFileContent.toString());
