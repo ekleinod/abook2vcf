@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import mozilla.thunderbird.Address;
 import mozilla.thunderbird.AddressBook;
 import de.edgesoft.abook2vcf.jmork.AddressComparator;
+import de.edgesoft.abook2vcf.jmork.AddressKeys;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
 
@@ -26,7 +27,7 @@ import de.edgesoft.utilities.commandline.CommandOption;
 public class ABook2VCF extends AbstractMainClass {
 
 	/** Argument input file. */
-	private final static CommandOption OPT_ABOOK = new CommandOption("i", "input", true, "<inputfile> (default: abook.mab)", false);
+	private final static CommandOption OPT_ABOOK = new CommandOption("a", "abook", true, "<abookfile> (default: abook.mab)", false);
 	
 	/** Argument output file. */
 	private final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "<output file> (default: abook.vcf)", false);
@@ -150,6 +151,15 @@ public class ABook2VCF extends AbstractMainClass {
 				writeVCards(lstDoubles, sDoublePattern, theVCFCount, theVersion);
 			}
 			
+			if (bWriteTextDump) {
+				String sFileName = theOutFile;
+				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
+					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
+				}
+				sFileName = String.format("%s.dump.txt", sFileName);
+				writeTextDump(theAddresses, sFileName, theInFile);
+			}
+			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
 		}
@@ -169,7 +179,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(Collection<Address> theAddresses, String theOutFilePattern, int theVCFCount, String theVersion) throws ABookException {
+	private static void writeVCards(Collection<Address> theAddresses, String theOutFilePattern, int theVCFCount, String theVersion) throws ABookException {
 		
 		try {
 			
@@ -323,7 +333,6 @@ public class ABook2VCF extends AbstractMainClass {
 		
 	}
 
-
 	/**
 	 * Returns a formatted VCard line.
 	 * 
@@ -425,6 +434,53 @@ public class ABook2VCF extends AbstractMainClass {
 		
 	}
 	
+	/**
+	 * Write text dump.
+	 * 
+	 * @param theAddresses list of addresses
+	 * @param theFileName file name
+	 * @param theABookName address book name
+	 * 
+	 * @throws ABookException if an error occurred during execution
+	 * 
+	 * @version 0.1
+	 * @since 0.1
+	 */
+	private static void writeTextDump(Collection<Address> theAddresses, String theFileName, String theABookName) throws ABookException {
+		
+		try {
+			
+			StringBuffer sbFileContent = new StringBuffer();
+			
+			sbFileContent.append(MessageFormat.format("dumping address book: {0}\n\n", theABookName));
+			sbFileContent.append(MessageFormat.format("address count: {0, number}\n", theAddresses.size()));
+			sbFileContent.append(MessageFormat.format("\n", theAddresses.size()));
+			
+			for (Address theAddress : theAddresses) {
+				
+				sbFileContent.append("----- start address -----\n");
+				for (AddressKeys theAddressKey : AddressKeys.values()) {
+					sbFileContent.append(theAddressKey.getKey());
+					sbFileContent.append(": ");
+					if (theAddress.get(theAddressKey.getKey()) == null) {
+						sbFileContent.append("null");
+					} else {
+						sbFileContent.append(theAddress.get(theAddressKey.getKey()).trim().replace("\n", "\\n").replace("\r", ""));
+					}
+					sbFileContent.append("\n");
+				}
+				sbFileContent.append("----- end address -----\n\n");
+				
+			}
+			
+			writeFile(theFileName, sbFileContent.toString());
+			
+		} catch (Exception e) {
+			throw new ABookException(e.getLocalizedMessage());
+		}
+		
+	}
+
 }
 
 /* EOF */
