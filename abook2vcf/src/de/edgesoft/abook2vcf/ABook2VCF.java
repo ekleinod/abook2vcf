@@ -265,6 +265,9 @@ public class ABook2VCF extends AbstractMainClass {
 				sbFileContent.append(getLine("TEL;TYPE=pager", theAddress.get("PagerNumber"), "\\n"));
 				sbFileContent.append(getLine("TEL;TYPE=cell", theAddress.get("CellularNumber"), "\\n"));
 				
+				// title
+				sbFileContent.append(getLine("TITLE", theAddress.get("JobTitle"), "\\n"));
+				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
 				sbFileContent.append("\n");
