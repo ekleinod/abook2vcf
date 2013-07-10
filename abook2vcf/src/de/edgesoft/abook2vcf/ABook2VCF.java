@@ -31,8 +31,17 @@ public class ABook2VCF extends AbstractMainClass {
 	/** Argument vcard count. */
 	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "number of vcards per file (default: 0 = unlimited)", false);
 	
+	/** Argument vcard version. */
+	private final static CommandOption OPT_VERSION = new CommandOption("v", "version", true, "vcard version (default: 3.0)", false);
+	
 	/** Vcard file extension. */
 	private final static String VCF_FILE_EXTENSION = ".vcf";
+	
+	/** Vcard version 3.0. */
+	private final static String VERSION_3 = "3.0";
+	
+	/** Vcard version 4.0. */
+	private final static String VERSION_4 = "4.0";
 	
 	/**
 	 * Main method, called from command line.
@@ -48,12 +57,17 @@ public class ABook2VCF extends AbstractMainClass {
 		addCommandOption(OPT_ABOOK);
 		addCommandOption(OPT_OUTFILE);
 		addCommandOption(OPT_VCFCOUNT);
+		addCommandOption(OPT_VERSION);
 		
 		init(args, ABook2VCF.class);
 		
 		try {
 			String sInFile = (getOptionValue(OPT_ABOOK) == null) ? "abook.mab" : getOptionValue(OPT_ABOOK);
 			String sOutFile = (getOptionValue(OPT_OUTFILE) == null) ? "abook.vcf" : getOptionValue(OPT_OUTFILE);
+			String sVersion = (getOptionValue(OPT_VERSION) == null) ? VERSION_3 : getOptionValue(OPT_VERSION);
+			if (!sVersion.equals(VERSION_3) && !sVersion.equals(VERSION_4)) {
+				sVersion = VERSION_3;
+			}
 			int iVCFCount = 0;
 			try {
 				iVCFCount = Integer.parseInt(getOptionValue(OPT_VCFCOUNT));
@@ -64,7 +78,7 @@ public class ABook2VCF extends AbstractMainClass {
 				iVCFCount = 0;
 			}
 			
-			convertABook(sInFile, sOutFile, iVCFCount);
+			convertABook(sInFile, sOutFile, iVCFCount, sVersion);
 			
 		} catch (Exception e) {
 			printError("");
@@ -83,13 +97,14 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @param theInFile input file
 	 * @param theOutFile output file
 	 * @param theVCFCount max vcard count
+	 * @param theVersion vcard version
 	 * 
 	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void convertABook(String theInFile, String theOutFile, int theVCFCount) throws ABookException {
+	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion) throws ABookException {
 		
 		try {
 			List<Address> theAddresses = loadAdresses(theInFile);
@@ -113,7 +128,7 @@ public class ABook2VCF extends AbstractMainClass {
 
 			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
 
-			writeVCards(setAddresses, sOutFilePattern, theVCFCount);
+			writeVCards(setAddresses, sOutFilePattern, theVCFCount, theVersion);
 			
 		} catch (Exception e) {
 			throw new ABookException(e.getLocalizedMessage());
@@ -127,13 +142,14 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @param theAddresses list of addresses
 	 * @param theOutFilePattern output file pattern
 	 * @param theVCFCount max vcard count
+	 * @param theVersion vcard version
 	 * 
 	 * @throws ABookException if an error occurred during execution
 	 * 
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	public static void writeVCards(Set<Address> theAddresses, String theOutFilePattern, int theVCFCount) throws ABookException {
+	public static void writeVCards(Set<Address> theAddresses, String theOutFilePattern, int theVCFCount, String theVersion) throws ABookException {
 		
 		try {
 			
@@ -150,7 +166,7 @@ public class ABook2VCF extends AbstractMainClass {
 				
 				// start
 				sbFileContent.append(getLine("BEGIN", "VCARD", "\\n"));
-				sbFileContent.append(getLine("VERSION", "3.0", "\\n"));
+				sbFileContent.append(getLine("VERSION", theVersion, "\\n"));
 				
 				// home address
 				sbTemp = new StringBuffer();
@@ -226,7 +242,7 @@ public class ABook2VCF extends AbstractMainClass {
 				// nickname
 				sbFileContent.append(getLine("NICKNAME", theAddress.get("NickName"), ","));
 				
-				// org
+				// organization
 				sbTemp = new StringBuffer();
 				sbTemp.append((theAddress.get("Company") == null) ? "" : theAddress.get("Company"));
 				sbTemp.append(";");
@@ -237,6 +253,10 @@ public class ABook2VCF extends AbstractMainClass {
 					sbFileContent.append(getLine("ORG", sbTemp.toString(), ","));
 				}
 				
+				// profile
+				if (theVersion.equals(VERSION_3)) {
+					sbFileContent.append(getLine("PROFILE", "VCARD", "\\n"));
+				}
 				
 				// end
 				sbFileContent.append(getLine("END", "VCARD", "\\n"));
