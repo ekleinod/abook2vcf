@@ -469,7 +469,7 @@ public class ABook2VCF extends AbstractMainClass {
 			
 			sbFileContent.append(MessageFormat.format("dumping address book: {0}\n\n", theABookName));
 			sbFileContent.append(MessageFormat.format("address count: {0, number}\n", theAddresses.size()));
-			sbFileContent.append(MessageFormat.format("\n", theAddresses.size()));
+			sbFileContent.append("\n");
 			
 			for (Address theAddress : theAddresses) {
 				
