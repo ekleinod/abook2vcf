@@ -33,23 +33,15 @@ public class AddressBook {
 	/** Internal singleton container for addresses in their last modified form. */
 	private List<Address> lstAddressesDBRowID = null;
 	
-	/** Internal singleton container for addresses in their last modified form without doubles. */
-	private List<Address> lstAddressesDBRowIDDoubles = null;
-	
 	/** Internal singleton container for removed addresses (last modified). */
 	private List<Address> lstAddressesDBRowIDRemoved = null;
-	
-	/** Internal singleton container for removed addresses (last modified and doubles). */
-	private List<Address> lstAddressesDBRowIDDoublesRemoved = null;
 	
 	/**
 	 * Default constructor.
 	 */
 	public AddressBook() {
 		lstAddressesDBRowID = new ArrayList<Address>();
-		lstAddressesDBRowIDDoubles = new ArrayList<Address>();
 		lstAddressesDBRowIDRemoved = new ArrayList<Address>();
-		lstAddressesDBRowIDDoublesRemoved = new ArrayList<Address>();
 	}
 	
 	/**
@@ -87,12 +79,26 @@ public class AddressBook {
 			}
 		}
 		
-		// compute modified lists
-		Map<String, Address> mapReturn = new HashMap<String, Address>();
+		// DBRowID
+		Map<String, Address> mapTemp = new HashMap<String, Address>();
+		lstAddressesDBRowIDRemoved = new ArrayList<Address>();
+		for (Address theAddress : addresses) {
+			if (mapTemp.containsKey(theAddress.getString(AddressKeys.DB_ROW_I_D))) {
+				if (theAddress.getString(AddressKeys.LAST_MODIFIED_DATE).compareToIgnoreCase(
+						mapTemp.get(theAddress.getString(AddressKeys.DB_ROW_I_D)).getString(AddressKeys.LAST_MODIFIED_DATE)) > 0) {
+					lstAddressesDBRowIDRemoved.add(mapTemp.get(theAddress.getString(AddressKeys.DB_ROW_I_D)));
+					mapTemp.put(theAddress.getString(AddressKeys.DB_ROW_I_D), theAddress);
+				} else {
+					lstAddressesDBRowIDRemoved.add(theAddress);
+				}
+			} else {
+				mapTemp.put(theAddress.getString(AddressKeys.DB_ROW_I_D), theAddress);
+			}
+		}
 		
-		// sort for convenience
-		lstAddressesDBRowID = new ArrayList<Address>(mapReturn.values());
+		lstAddressesDBRowID = new ArrayList<Address>(mapTemp.values());
 		Collections.sort(lstAddressesDBRowID, new AddressComparator());
+		Collections.sort(lstAddressesDBRowIDRemoved, new AddressComparator());
 	}
 
 	/**
@@ -130,25 +136,6 @@ public class AddressBook {
 	}
 
 	/**
-	 * Returns an unmodifiable list of all {@link Address}es in their last modified form without doubles.
-	 * 
-	 * This method removes all duplicates of {@link Address}es.
-	 * Duplicates means here: addresses with the same DBRowID, the same name and email.
-	 * If several addresses contain the same DBRowID, the last modified (LastModifiedDate) address is used.
-	 * 
-	 * @return an unmodifiable list of DBRowID-unique {@link Address}es without doubles, might be empty, never null.
-	 *  @retval empty list if no addresses are to be returned
-	 */
-	public List<Address> getAddressesDBRowIDDoubles() {
-		
-		if (lstAddressesDBRowIDDoubles == null) {
-			return Collections.emptyList();
-		}
-		
-		return Collections.unmodifiableList(lstAddressesDBRowIDDoubles);
-	}
-
-	/**
 	 * Returns an unmodifiable list of all remaining {@link Address}es of {@link #getAddressesDBRowID()}.
 	 * 
 	 * @return an unmodifiable list of remaining {@link Address}es of {@link #getAddressesDBRowID()}, might be empty, never null.
@@ -161,21 +148,6 @@ public class AddressBook {
 		}
 		
 		return Collections.unmodifiableList(lstAddressesDBRowIDRemoved);
-	}
-
-	/**
-	 * Returns an unmodifiable list of all remaining {@link Address}es of {@link #getAddressesDBRowIDDoubles()}.
-	 * 
-	 * @return an unmodifiable list of remaining {@link Address}es of {@link #getAddressesDBRowIDDoubles()}, might be empty, never null.
-	 *  @retval empty list if no addresses are to be returned
-	 */
-	public List<Address> getAddressesDBRowIDDoublesRemoved() {
-		
-		if (lstAddressesDBRowIDDoublesRemoved == null) {
-			return Collections.emptyList();
-		}
-		
-		return Collections.unmodifiableList(lstAddressesDBRowIDDoublesRemoved);
 	}
 
 	/**

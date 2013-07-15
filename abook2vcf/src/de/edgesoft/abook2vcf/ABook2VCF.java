@@ -3,15 +3,10 @@ package de.edgesoft.abook2vcf;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import de.edgesoft.abook2vcf.jmork.Address;
 import de.edgesoft.abook2vcf.jmork.AddressBook;
-import de.edgesoft.abook2vcf.jmork.AddressComparator;
 import de.edgesoft.abook2vcf.jmork.AddressKeys;
 import de.edgesoft.utilities.commandline.AbstractMainClass;
 import de.edgesoft.utilities.commandline.CommandOption;
@@ -132,21 +127,14 @@ public class ABook2VCF extends AbstractMainClass {
 	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion, boolean bWriteDoubles, boolean bWriteTextDump, boolean bWriteCsvDump) throws ABookException {
 		
 		try {
-			List<Address> theAddresses = loadAdresses(theInFile);
-			Set<Address> setAddresses = new TreeSet<Address>(new AddressComparator());
-			List<Address> lstDoubles = new ArrayList<Address>();
-			for (Address theAddress : theAddresses) {
-				if (!setAddresses.add(theAddress)) {
-					lstDoubles.add(theAddress);
-				}
-			}
+			AddressBook theAddressBook = loadAdresses(theInFile);
 			
-			printMessage(MessageFormat.format("address count: {0, number}", setAddresses.size()));
-			printMessage(MessageFormat.format("double count: {0, number}", lstDoubles.size()));
+			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddressesDBRowID().size()));
+			printMessage(MessageFormat.format("double count: {0, number}", theAddressBook.getAddressesDBRowIDRemoved().size()));
 
-			String sOutFilePattern = getOutFilePattern(theAddresses.size(), theOutFile, theVCFCount);
+			String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), theOutFile, theVCFCount);
 
-			writeVCards(setAddresses, sOutFilePattern, theVCFCount, theVersion);
+			writeVCards(theAddressBook.getAddressesDBRowID(), sOutFilePattern, theVCFCount, theVersion);
 
 			if (bWriteDoubles) {
 				File fleTemp = new File(sOutFilePattern);
@@ -154,7 +142,7 @@ public class ABook2VCF extends AbstractMainClass {
 				if (fleTemp.getParent() != null) {
 					sDoublePattern = String.format("%s%s%s", fleTemp.getParent(), System.getProperty("file.separator"), sDoublePattern);
 				}
-				writeVCards(lstDoubles, sDoublePattern, theVCFCount, theVersion);
+				writeVCards(theAddressBook.getAddressesDBRowIDRemoved(), sDoublePattern, theVCFCount, theVersion);
 			}
 			
 			if (bWriteTextDump) {
@@ -163,7 +151,7 @@ public class ABook2VCF extends AbstractMainClass {
 					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
 				}
 				sFileName = String.format("%s.dump.txt", sFileName);
-				writeTextDump(theAddresses, sFileName, theInFile);
+				writeTextDump(theAddressBook.getAddresses(), sFileName, theInFile);
 			}
 			
 			if (bWriteCsvDump) {
@@ -172,7 +160,7 @@ public class ABook2VCF extends AbstractMainClass {
 					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
 				}
 				sFileName = String.format("%s.dump.csv", sFileName);
-				writeCsvDump(theAddresses, sFileName);
+				writeCsvDump(theAddressBook.getAddresses(), sFileName);
 			}
 			
 		} catch (Exception e) {
@@ -408,7 +396,7 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @version 0.1
 	 * @since 0.1
 	 */
-	private static List<Address> loadAdresses(String theInFile) throws ABookException {
+	private static AddressBook loadAdresses(String theInFile) throws ABookException {
 		
 		AddressBook theAddressBook = new AddressBook();
 		
@@ -445,8 +433,7 @@ public class ABook2VCF extends AbstractMainClass {
 			throw new ABookException(e.getLocalizedMessage());
 		}
 		
-		return theAddressBook.getAddresses();
-		
+		return theAddressBook;
 	}
 	
 	/**
