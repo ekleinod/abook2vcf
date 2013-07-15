@@ -16,8 +16,8 @@ import java.util.Comparator;
  * 
  * Inspired by ibauersachs.
  * 
- * @author Ekkart Kleinod
  * @author ibauersachs
+ * @author Ekkart Kleinod (ekleinod)
  * @version 0.1
  * @since 0.1
  */
