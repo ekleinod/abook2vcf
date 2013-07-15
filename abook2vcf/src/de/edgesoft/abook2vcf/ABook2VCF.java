@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import mozilla.thunderbird.Address;
-import mozilla.thunderbird.AddressBook;
+import de.edgesoft.abook2vcf.jmork.Address;
+import de.edgesoft.abook2vcf.jmork.AddressBook;
 import de.edgesoft.abook2vcf.jmork.AddressComparator;
 import de.edgesoft.abook2vcf.jmork.AddressKeys;
 import de.edgesoft.utilities.commandline.AbstractMainClass;

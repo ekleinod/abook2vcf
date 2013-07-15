@@ -2,7 +2,6 @@ package de.edgesoft.abook2vcf.jmork;
 
 import java.util.Comparator;
 
-import mozilla.thunderbird.Address;
 
 /**
  * Compares two addresses.
@@ -33,29 +32,37 @@ public class AddressComparator implements Comparator<Address> {
 	public int compare(Address o1, Address o2) {
 		int iComparison = 0;
 		
-		if (o1.getLastName() != null && o2.getLastName() != null) {
-			iComparison = o1.getLastName().compareToIgnoreCase(o2.getLastName());
+		String sO1 = o1.get(AddressKeys.LAST_NAME);
+		String sO2 = o2.get(AddressKeys.LAST_NAME);
+		if ((sO1 != null) && (sO2 != null)) {
+			iComparison = sO1.compareToIgnoreCase(sO2);
 			if (iComparison != 0) {
 				return iComparison;
 			}
 		}
 		
-		if (o1.getFirstName() != null && o2.getFirstName() != null) {
-			iComparison = o1.getFirstName().compareToIgnoreCase(o2.getFirstName());
+		sO1 = o1.get(AddressKeys.FIRST_NAME);
+		sO2 = o2.get(AddressKeys.FIRST_NAME);
+		if ((sO1 != null) && (sO2 != null)) {
+			iComparison = sO1.compareToIgnoreCase(sO2);
 			if (iComparison != 0) {
 				return iComparison;
 			}
 		}
 		
-		if (o1.getDisplayName() != null && o2.getDisplayName() != null) {
-			iComparison = o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName());
+		sO1 = o1.get(AddressKeys.DISPLAY_NAME);
+		sO2 = o2.get(AddressKeys.DISPLAY_NAME);
+		if ((sO1 != null) && (sO2 != null)) {
+			iComparison = sO1.compareToIgnoreCase(sO2);
 			if (iComparison != 0) {
 				return iComparison;
 			}
 		}
 		
-		if (o1.getPrimaryEmail() != null && o2.getPrimaryEmail() != null) {
-			iComparison = o1.getPrimaryEmail().compareToIgnoreCase(o2.getPrimaryEmail());
+		sO1 = o1.get(AddressKeys.PRIMARY_EMAIL);
+		sO2 = o2.get(AddressKeys.PRIMARY_EMAIL);
+		if ((sO1 != null) && (sO2 != null)) {
+			iComparison = sO1.compareToIgnoreCase(sO2);
 			if (iComparison != 0) {
 				return iComparison;
 			}
