@@ -46,10 +46,10 @@ public class ABook2VCF extends AbstractMainClass {
 	private final static String VCF_FILE_EXTENSION = ".vcf";
 	
 	/** Vcard version 3.0. */
-	private final static String VERSION_3 = "3.0";
+	public final static String VERSION_3 = "3.0";
 	
 	/** Vcard version 4.0. */
-	private final static String VERSION_4 = "4.0";
+	public final static String VERSION_4 = "4.0";
 	
 	/**
 	 * Main method, called from command line.

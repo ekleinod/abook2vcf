@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -20,9 +22,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -35,16 +38,21 @@ public class ABook2VCFGUI {
 
 	private JFrame frmAbookVcf;
 
-	private String sInFile = null;
-	private String sOutFile = null;
+	private String sABookFile = null;
+	private String sVCFFile = null;
 	private int iVCFCount = 0;
 	private String sVersion = null;
-	private boolean bWriteDoubles = false;
-	private boolean bWriteTextDump = false;
-	private boolean bWriteCsvDump = false;
+	private boolean bDoubles = false;
+	private boolean bTextDump = false;
+	private boolean bCSVDump = false;
 	private JTextField txtABook;
 	private JTextField txtVCF;
 	private JLabel lblCMDLine;
+	private JCheckBox chkCSVDump;
+	private JCheckBox chkTextDump;
+	private JCheckBox chkDoubles;
+	private JComboBox cboVersion;
+	private JSpinner spnVCFCount;
 	
 	/**
 	 * Launch the application.
@@ -76,7 +84,7 @@ public class ABook2VCFGUI {
 	private void initialize() {
 		frmAbookVcf = new JFrame();
 		frmAbookVcf.setTitle("ABook 2 VCF");
-		frmAbookVcf.setBounds(100, 100, 454, 298);
+		frmAbookVcf.setBounds(100, 100, 563, 298);
 		frmAbookVcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAbookVcf.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -153,6 +161,18 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblVCF, gbc_lblVCF);
 		
 		txtVCF = new JTextField();
+		txtVCF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				updateCMDLine();
+			}
+		});
+		txtVCF.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		lblVCF.setLabelFor(txtVCF);
 		txtVCF.setColumns(10);
 		GridBagConstraints gbc_txtVCF = new GridBagConstraints();
@@ -195,7 +215,14 @@ public class ABook2VCFGUI {
 		gbc_lblVCFCount.gridy = 2;
 		pnlMain.add(lblVCFCount, gbc_lblVCFCount);
 		
-		JSpinner spnVCFCount = new JSpinner();
+		spnVCFCount = new JSpinner();
+		spnVCFCount.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				updateCMDLine();
+			}
+		});
+		spnVCFCount.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		lblVCFCount.setLabelFor(spnVCFCount);
 		GridBagConstraints gbc_spnVCFCount = new GridBagConstraints();
 		gbc_spnVCFCount.fill = GridBagConstraints.HORIZONTAL;
@@ -223,7 +250,13 @@ public class ABook2VCFGUI {
 		gbc_lblVersion.gridy = 3;
 		pnlMain.add(lblVersion, gbc_lblVersion);
 		
-		JComboBox cboVersion = new JComboBox();
+		cboVersion = new JComboBox();
+		cboVersion.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		cboVersion.setModel(new DefaultComboBoxModel(new String[] {"3.0", "4.0"}));
 		cboVersion.setSelectedIndex(0);
 		cboVersion.setMaximumRowCount(2);
@@ -243,7 +276,13 @@ public class ABook2VCFGUI {
 		gbc_lblDoubles.gridy = 4;
 		pnlMain.add(lblDoubles, gbc_lblDoubles);
 		
-		JCheckBox chkDoubles = new JCheckBox("");
+		chkDoubles = new JCheckBox("");
+		chkDoubles.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		lblDoubles.setLabelFor(chkDoubles);
 		GridBagConstraints gbc_chkDoubles = new GridBagConstraints();
 		gbc_chkDoubles.anchor = GridBagConstraints.WEST;
@@ -260,7 +299,13 @@ public class ABook2VCFGUI {
 		gbc_lblTextDump.gridy = 5;
 		pnlMain.add(lblTextDump, gbc_lblTextDump);
 		
-		JCheckBox chkTextDump = new JCheckBox("");
+		chkTextDump = new JCheckBox("");
+		chkTextDump.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		lblTextDump.setLabelFor(chkTextDump);
 		GridBagConstraints gbc_chkTextDump = new GridBagConstraints();
 		gbc_chkTextDump.anchor = GridBagConstraints.WEST;
@@ -277,7 +322,13 @@ public class ABook2VCFGUI {
 		gbc_lblCSVDump.gridy = 6;
 		pnlMain.add(lblCSVDump, gbc_lblCSVDump);
 		
-		JCheckBox chkCSVDump = new JCheckBox("");
+		chkCSVDump = new JCheckBox("");
+		chkCSVDump.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		lblCSVDump.setLabelFor(chkCSVDump);
 		GridBagConstraints gbc_chkCSVDump = new GridBagConstraints();
 		gbc_chkCSVDump.anchor = GridBagConstraints.WEST;
@@ -295,6 +346,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblCMDCall, gbc_lblCMDCall);
 		
 		lblCMDLine = new JLabel("abook2vcf");
+		lblCMDLine.setEnabled(false);
 		lblCMDCall.setLabelFor(lblCMDLine);
 		lblCMDLine.setFont(lblCMDLine.getFont().deriveFont(lblCMDLine.getFont().getStyle() & ~Font.BOLD, lblCMDLine.getFont().getSize() - 2f));
 		GridBagConstraints gbc_lblCMDLine = new GridBagConstraints();
@@ -354,16 +406,47 @@ public class ABook2VCFGUI {
 	 * @since 0.2
 	 */
 	private void updateCMDLine() {
+
 		StringBuffer sbCMD = new StringBuffer("abook2vcf");
 		
-		if (!txtABook.getText().trim().isEmpty()) {
-			sbCMD.append(String.format(" --%s %s", ABook2VCF.OPT_ABOOK.getOption().getLongOpt(), txtABook.getText().trim()));
+		sABookFile = (txtABook.getText().trim().isEmpty()) ? null : txtABook.getText().trim();
+		if (sABookFile != null) {
+			sbCMD.append(String.format(" --%s %s", ABook2VCF.OPT_ABOOK.getOption().getLongOpt(), sABookFile));
 		}
 		
-		getLblCMDLine().setText(sbCMD.toString());
+		sVCFFile = (txtVCF.getText().trim().isEmpty()) ? null : txtVCF.getText().trim();
+		if (sVCFFile != null) {
+			sbCMD.append(String.format(" --%s %s", ABook2VCF.OPT_OUTFILE.getOption().getLongOpt(), sVCFFile));
+		}
+		
+		iVCFCount = (Integer) ((SpinnerNumberModel) spnVCFCount.getModel()).getNumber();
+		if (iVCFCount > 0) {
+			sbCMD.append(String.format(" --%s %d", ABook2VCF.OPT_VCFCOUNT.getOption().getLongOpt(), iVCFCount));
+		}
+		
+		sVersion = (String) cboVersion.getSelectedItem();
+		if (!sVersion.equals(ABook2VCF.VERSION_3)) {
+			sbCMD.append(String.format(" --%s %s", ABook2VCF.OPT_VERSION.getOption().getLongOpt(), sVersion));
+		}
+		
+		bDoubles = (chkDoubles != null) && chkDoubles.isSelected();
+		if (bDoubles) {
+			sbCMD.append(String.format(" --%s", ABook2VCF.OPT_DOUBLES.getOption().getLongOpt()));
+		}
+		
+		bTextDump = (chkTextDump != null) && chkTextDump.isSelected();
+		if (bTextDump) {
+			sbCMD.append(String.format(" --%s", ABook2VCF.OPT_TEXTDUMP.getOption().getLongOpt()));
+		}
+		
+		bCSVDump = (chkCSVDump != null) && chkCSVDump.isSelected();
+		if (bCSVDump) {
+			sbCMD.append(String.format(" --%s", ABook2VCF.OPT_CSVDUMP.getOption().getLongOpt()));
+		}
+		
+		if (lblCMDLine != null) {
+			lblCMDLine.setText(sbCMD.toString());
+		}
 	}
 
-	protected JLabel getLblCMDLine() {
-		return lblCMDLine;
-	}
 }
