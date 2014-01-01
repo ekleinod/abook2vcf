@@ -6,9 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -30,6 +33,9 @@ public abstract class AbstractMainClass {
 	
 	/** Logger. */
 	private final static Logger logger = Logger.getLogger(AbstractMainClass.class.getName());
+
+	/** Logger's handler. */
+	private static Handler stmHandler = null;
 	
 	/** Storage for options. */
 	private static List<CommandOption> lstCommandOptions = null;
@@ -83,7 +89,7 @@ public abstract class AbstractMainClass {
 	 */
 	public static void addCommandOption(CommandOption theCommandOption) {
 		if (lstCommandOptions == null) {
-			lstCommandOptions = new ArrayList<CommandOption>();
+			lstCommandOptions = new ArrayList<>();
 		}
 		lstCommandOptions.add(theCommandOption);
 	}
@@ -182,6 +188,13 @@ public abstract class AbstractMainClass {
 		stmLog = theOutputStream;
 	}
 	
+	/** 
+	 * Flushes the log handler. 
+	 */
+	public static void flushLog() {
+		stmHandler.flush();
+	}
+	
 	/**
 	 * logs a message.
 	 * 
@@ -190,7 +203,13 @@ public abstract class AbstractMainClass {
 	public static void log(Level theLevel, String theMessage) {
 		if (logger.getHandlers().length == 0) {
 			logger.setUseParentHandlers(false);
-			logger.addHandler(new StreamHandler(stmLog, new SimpleFormatter()));
+			stmHandler = new StreamHandler(stmLog, new SimpleFormatter());
+			try {
+				stmHandler.setEncoding(StandardCharsets.UTF_8.name());
+			} catch (SecurityException | UnsupportedEncodingException e) {
+				// do nothing, stay with default encoding
+			}
+			logger.addHandler(stmHandler);
 		}
 		
 		logger.log(theLevel, theMessage);

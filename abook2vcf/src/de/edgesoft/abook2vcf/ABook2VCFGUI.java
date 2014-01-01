@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -432,7 +435,7 @@ public class ABook2VCFGUI {
 	 */
 	private void updateCMDLine() {
 
-		StringBuffer sbCMD = new StringBuffer("abook2vcf");
+		StringBuilder sbCMD = new StringBuilder("abook2vcf");
 		
 		sABookFile = (txtABook.getText().trim().isEmpty()) ? null : txtABook.getText().trim();
 		if (sABookFile != null) {
@@ -480,12 +483,29 @@ public class ABook2VCFGUI {
 	private void executeConversion() {
 		btnConvert.setEnabled(false);
 		try {
-			ABook2VCF.convertABook(sABookFile, sVCFFile, iVCFCount, sVersion, bDoubles, bTextDump, bCSVDump);
-			JOptionPane.showMessageDialog(frmAbookVcf, 
-					"Conversion successful.",
-					ABook2VCF.class.getSimpleName(),
-					JOptionPane.INFORMATION_MESSAGE);
-		} catch (ABookException e) {
+			ByteArrayOutputStream stmOut = new ByteArrayOutputStream();
+			try {
+				ABook2VCF.setLoggingStream(stmOut);
+				ABook2VCF.convertABook(sABookFile, sVCFFile, iVCFCount, sVersion, bDoubles, bTextDump, bCSVDump);
+				JOptionPane.showMessageDialog(frmAbookVcf, 
+						"Conversion successful.",
+						ABook2VCF.class.getSimpleName(),
+						JOptionPane.INFORMATION_MESSAGE);
+			} catch (ABookException e) {
+				ABook2VCF.log(e);
+				ABook2VCF.flushLog();
+				JOptionPane.showMessageDialog(frmAbookVcf, 
+						String.format("Conversion failed:%n%s", e.getMessage()),
+						ABook2VCF.class.getSimpleName(),
+						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(frmAbookVcf, 
+						String.format("Log:%n%s", stmOut.toString(StandardCharsets.UTF_8.name())),
+						ABook2VCF.class.getSimpleName(),
+						JOptionPane.ERROR_MESSAGE);
+			} finally {
+				stmOut.close();
+			}
+		} catch (IOException e) {
 			JOptionPane.showMessageDialog(frmAbookVcf, 
 					String.format("Conversion failed:%n%s", e.getMessage()),
 					ABook2VCF.class.getSimpleName(),

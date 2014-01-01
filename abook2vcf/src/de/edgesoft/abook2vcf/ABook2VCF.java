@@ -75,8 +75,8 @@ public class ABook2VCF extends AbstractMainClass {
 		log(Level.INFO, "start.");
 		
 		try {
-			String sInFile = (getOptionValue(OPT_ABOOK) == null) ? "abook.mab" : getOptionValue(OPT_ABOOK);
-			String sOutFile = (getOptionValue(OPT_OUTFILE) == null) ? "abook.vcf" : getOptionValue(OPT_OUTFILE);
+			String sInFile = getOptionValue(OPT_ABOOK);
+			String sOutFile = getOptionValue(OPT_OUTFILE);
 			
 			int iVCFCount = 0;
 			try {
@@ -84,15 +84,8 @@ public class ABook2VCF extends AbstractMainClass {
 			} catch (Exception e) {
 				// do nothing, iVCFCount remains 0
 			}
-			if (iVCFCount < 0) {
-				iVCFCount = 0;
-			}
 			
-			String sVersion = (getOptionValue(OPT_VERSION) == null) ? VERSION_3 : getOptionValue(OPT_VERSION);
-			if (!sVersion.equals(VERSION_3) && !sVersion.equals(VERSION_4)) {
-				sVersion = VERSION_3;
-			}
-
+			String sVersion = getOptionValue(OPT_VERSION);
 			boolean bWriteDoubles = hasOption(OPT_DOUBLES);
 			boolean bWriteTextDump = hasOption(OPT_TEXTDUMP);
 			boolean bWriteCsvDump = hasOption(OPT_CSVDUMP);
@@ -126,15 +119,23 @@ public class ABook2VCF extends AbstractMainClass {
 	 */
 	public static void convertABook(String theInFile, String theOutFile, int theVCFCount, String theVersion, boolean bWriteDoubles, boolean bWriteTextDump, boolean bWriteCsvDump) throws ABookException {
 		
+		String sInFile = (theInFile == null) ? "abook.mab" : theInFile;
+		String sOutFile = (theOutFile == null) ? "abook.vcf" : theOutFile;
+		int iVCFCount = (theVCFCount < 0) ? 0 : theVCFCount;
+		String sVersion = (theVersion == null) ? VERSION_3 : theVersion;
+		if (!sVersion.equals(VERSION_3) && !sVersion.equals(VERSION_4)) {
+			sVersion = VERSION_3;
+		}
+		
 		try {
-			AddressBook theAddressBook = loadAdresses(theInFile);
+			AddressBook theAddressBook = loadAdresses(sInFile);
 			
 			log(Level.INFO, MessageFormat.format("address count: {0, number}", theAddressBook.getAddressesDBRowID().size()));
 			log(Level.INFO, MessageFormat.format("double count: {0, number}", theAddressBook.getAddressesDBRowIDRemoved().size()));
 
-			String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), theOutFile, theVCFCount);
+			String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), sOutFile, iVCFCount);
 
-			writeVCards(theAddressBook.getAddressesDBRowID(), sOutFilePattern, theVCFCount, theVersion);
+			writeVCards(theAddressBook.getAddressesDBRowID(), sOutFilePattern, iVCFCount, sVersion);
 
 			if (bWriteDoubles) {
 				File fleTemp = new File(sOutFilePattern);
@@ -142,20 +143,20 @@ public class ABook2VCF extends AbstractMainClass {
 				if (fleTemp.getParent() != null) {
 					sDoublePattern = String.format("%s%s%s", fleTemp.getParent(), System.getProperty("file.separator"), sDoublePattern);
 				}
-				writeVCards(theAddressBook.getAddressesDBRowIDRemoved(), sDoublePattern, theVCFCount, theVersion);
+				writeVCards(theAddressBook.getAddressesDBRowIDRemoved(), sDoublePattern, iVCFCount, sVersion);
 			}
 			
 			if (bWriteTextDump) {
-				String sFileName = theOutFile;
+				String sFileName = sOutFile;
 				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
 					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
 				}
 				sFileName = String.format("%s.dump.txt", sFileName);
-				writeTextDump(theAddressBook.getAddresses(), sFileName, theInFile);
+				writeTextDump(theAddressBook.getAddresses(), sFileName, sInFile);
 			}
 			
 			if (bWriteCsvDump) {
-				String sFileName = theOutFile;
+				String sFileName = sOutFile;
 				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
 					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
 				}
