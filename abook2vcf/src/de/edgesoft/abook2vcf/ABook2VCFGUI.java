@@ -31,6 +31,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -394,6 +396,10 @@ public class ABook2VCFGUI {
 			}
 		});
 		pnlBottom.add(btnExit);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
+		frmAbookVcf.getContentPane().add(textArea, BorderLayout.EAST);
 	}
 	
 	/**
