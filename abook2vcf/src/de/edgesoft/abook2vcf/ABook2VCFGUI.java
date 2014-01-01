@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -96,6 +98,18 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblABook, gbc_lblABook);
 		
 		txtABook = new JTextField();
+		txtABook.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				updateCMDLine();
+			}
+		});
+		txtABook.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateCMDLine();
+			}
+		});
 		lblABook.setLabelFor(txtABook);
 		txtABook.setColumns(10);
 		GridBagConstraints gbc_txtABook = new GridBagConstraints();
@@ -111,6 +125,7 @@ public class ABook2VCFGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectABookFile();
+				updateCMDLine();
 			}
 		});
 		btnABook.setIcon(new ImageIcon(ABook2VCFGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
@@ -153,6 +168,7 @@ public class ABook2VCFGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectVCFFile();
+				updateCMDLine();
 			}
 		});
 		btnVCF.setIcon(new ImageIcon(ABook2VCFGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/floppy.gif")));
