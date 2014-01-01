@@ -16,7 +16,7 @@ import de.edgesoft.utilities.commandline.CommandOption;
  * Exports a thunderbird addressbook to one or several vcard (vcf) files.
  * 
  * @author Ekkart Kleinod
- * @version 0.1
+ * @version 0.2
  * @since 0.1
  */
 public class ABook2VCF extends AbstractMainClass {

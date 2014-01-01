@@ -23,6 +23,13 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+/**
+ * Simple GUI for {@link ABook2VCF}.
+ * 
+ * @author Ekkart Kleinod
+ * @version 0.2
+ * @since 0.2
+ */
 public class ABook2VCFGUI {
 
 	private JFrame frmAbookVcf;
