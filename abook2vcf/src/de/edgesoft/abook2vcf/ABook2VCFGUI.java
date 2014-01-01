@@ -22,6 +22,11 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -33,8 +38,6 @@ import com.jgoodies.forms.layout.RowSpec;
 public class ABook2VCFGUI {
 
 	private JFrame frmAbookVcf;
-	private JTextField txtABook;
-	private JTextField txtVCF;
 
 	private String sInFile = null;
 	private String sOutFile = null;
@@ -43,6 +46,8 @@ public class ABook2VCFGUI {
 	private boolean bWriteDoubles = false;
 	private boolean bWriteTextDump = false;
 	private boolean bWriteCsvDump = false;
+	private JTextField textField;
+	private JTextField textField_1;
 	
 	/**
 	 * Launch the application.
@@ -74,11 +79,11 @@ public class ABook2VCFGUI {
 	private void initialize() {
 		frmAbookVcf = new JFrame();
 		frmAbookVcf.setTitle("ABook 2 VCF");
-		frmAbookVcf.setBounds(100, 100, 432, 300);
+		frmAbookVcf.setBounds(100, 100, 683, 568);
 		frmAbookVcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAbookVcf.getContentPane().setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
+				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -102,144 +107,183 @@ public class ABook2VCFGUI {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,}));
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
 		
-		JLabel lblABook = new JLabel("ABook file (input)");
-		frmAbookVcf.getContentPane().add(lblABook, "2, 2");
+		JPanel panel = new JPanel();
+		frmAbookVcf.getContentPane().add(panel, "2, 18, fill, fill");
+		panel.setLayout(new BorderLayout(0, 0));
 		
-		txtABook = new JTextField();
-		lblABook.setLabelFor(txtABook);
-		frmAbookVcf.getContentPane().add(txtABook, "4, 2, fill, default");
-		txtABook.setColumns(10);
+		JPanel panel_1 = new JPanel();
+		panel.add(panel_1, BorderLayout.CENTER);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[]{0, 0, 0};
+		gbl_panel_1.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_1.setLayout(gbl_panel_1);
 		
-		JButton btnABook = new JButton("");
-		btnABook.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectABookFile();
-			}
-		});
-		btnABook.setIcon(new ImageIcon(ABook2VCFGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
-		frmAbookVcf.getContentPane().add(btnABook, "6, 2");
+		JLabel label = new JLabel("ABook file (input)");
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 5, 5);
+		gbc_label.anchor = GridBagConstraints.EAST;
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 0;
+		panel_1.add(label, gbc_label);
 		
-		JLabel lblDefaultAbookmab = new JLabel("default: abook.mab");
-		lblDefaultAbookmab.setFont(lblDefaultAbookmab.getFont().deriveFont(lblDefaultAbookmab.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, lblDefaultAbookmab.getFont().getSize() - 2f));
-		frmAbookVcf.getContentPane().add(lblDefaultAbookmab, "8, 2");
+		textField = new JTextField();
+		textField.setColumns(10);
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 0;
+		panel_1.add(textField, gbc_textField);
 		
-		JLabel lblVCF = new JLabel("VCF file (output)");
-		frmAbookVcf.getContentPane().add(lblVCF, "2, 4");
+		JButton button = new JButton("");
+		GridBagConstraints gbc_button = new GridBagConstraints();
+		gbc_button.insets = new Insets(0, 0, 5, 5);
+		gbc_button.gridx = 2;
+		gbc_button.gridy = 0;
+		panel_1.add(button, gbc_button);
 		
-		txtVCF = new JTextField();
-		lblVCF.setLabelFor(txtVCF);
-		frmAbookVcf.getContentPane().add(txtVCF, "4, 4, fill, default");
-		txtVCF.setColumns(10);
+		JLabel label_1 = new JLabel("default: abook.mab");
+		label_1.setFont(label_1.getFont().deriveFont(label_1.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, label_1.getFont().getSize() - 2f));
+		GridBagConstraints gbc_label_1 = new GridBagConstraints();
+		gbc_label_1.insets = new Insets(0, 0, 5, 0);
+		gbc_label_1.gridx = 3;
+		gbc_label_1.gridy = 0;
+		panel_1.add(label_1, gbc_label_1);
 		
-		JButton btnVCF = new JButton("");
-		btnVCF.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectVCFFile();
-			}
-		});
-		btnVCF.setIcon(new ImageIcon(ABook2VCFGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/floppy.gif")));
-		frmAbookVcf.getContentPane().add(btnVCF, "6, 4");
+		JLabel label_2 = new JLabel("VCF file (output)");
+		GridBagConstraints gbc_label_2 = new GridBagConstraints();
+		gbc_label_2.anchor = GridBagConstraints.EAST;
+		gbc_label_2.insets = new Insets(0, 0, 5, 5);
+		gbc_label_2.gridx = 0;
+		gbc_label_2.gridy = 1;
+		panel_1.add(label_2, gbc_label_2);
 		
-		JLabel lblDefaultAbookvcf = new JLabel("default: abook.vcf");
-		lblDefaultAbookvcf.setFont(lblDefaultAbookvcf.getFont().deriveFont(lblDefaultAbookvcf.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, lblDefaultAbookvcf.getFont().getSize() - 2f));
-		frmAbookVcf.getContentPane().add(lblDefaultAbookvcf, "8, 4");
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_1.gridx = 1;
+		gbc_textField_1.gridy = 1;
+		panel_1.add(textField_1, gbc_textField_1);
 		
-		JLabel lblVCFCount = new JLabel("Cards per file");
-		frmAbookVcf.getContentPane().add(lblVCFCount, "2, 6");
+		JButton button_1 = new JButton("");
+		GridBagConstraints gbc_button_1 = new GridBagConstraints();
+		gbc_button_1.insets = new Insets(0, 0, 5, 5);
+		gbc_button_1.gridx = 2;
+		gbc_button_1.gridy = 1;
+		panel_1.add(button_1, gbc_button_1);
 		
-		JSpinner spnVCFCount = new JSpinner();
-		lblVCFCount.setLabelFor(spnVCFCount);
-		spnVCFCount.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
-		frmAbookVcf.getContentPane().add(spnVCFCount, "4, 6");
+		JLabel label_10 = new JLabel("default: abook.vcf");
+		label_10.setFont(label_10.getFont().deriveFont(label_10.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, label_10.getFont().getSize() - 2f));
+		GridBagConstraints gbc_label_10 = new GridBagConstraints();
+		gbc_label_10.insets = new Insets(0, 0, 5, 0);
+		gbc_label_10.gridx = 3;
+		gbc_label_10.gridy = 1;
+		panel_1.add(label_10, gbc_label_10);
 		
-		JLabel lblUnlimited = new JLabel("0 = unlimited");
-		lblUnlimited.setFont(lblUnlimited.getFont().deriveFont(lblUnlimited.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, lblUnlimited.getFont().getSize() - 2f));
-		frmAbookVcf.getContentPane().add(lblUnlimited, "8, 6");
+		JLabel label_3 = new JLabel("Cards per file");
+		GridBagConstraints gbc_label_3 = new GridBagConstraints();
+		gbc_label_3.insets = new Insets(0, 0, 5, 5);
+		gbc_label_3.gridx = 0;
+		gbc_label_3.gridy = 2;
+		panel_1.add(label_3, gbc_label_3);
 		
-		JLabel lblVersion = new JLabel("VCard version");
-		frmAbookVcf.getContentPane().add(lblVersion, "2, 8");
+		JSpinner spinner = new JSpinner();
+		GridBagConstraints gbc_spinner = new GridBagConstraints();
+		gbc_spinner.insets = new Insets(0, 0, 5, 5);
+		gbc_spinner.gridx = 1;
+		gbc_spinner.gridy = 2;
+		panel_1.add(spinner, gbc_spinner);
 		
-		JComboBox cboVersion = new JComboBox();
-		lblVersion.setLabelFor(cboVersion);
-		cboVersion.setModel(new DefaultComboBoxModel(new String[] {"3.0", "4.0"}));
-		cboVersion.setSelectedIndex(0);
-		cboVersion.setMaximumRowCount(2);
-		frmAbookVcf.getContentPane().add(cboVersion, "4, 8, fill, default");
+		JLabel label_11 = new JLabel("0 = unlimited");
+		label_11.setFont(label_11.getFont().deriveFont(label_11.getFont().getStyle() & ~Font.BOLD | Font.ITALIC, label_11.getFont().getSize() - 2f));
+		GridBagConstraints gbc_label_11 = new GridBagConstraints();
+		gbc_label_11.insets = new Insets(0, 0, 5, 0);
+		gbc_label_11.gridx = 3;
+		gbc_label_11.gridy = 2;
+		panel_1.add(label_11, gbc_label_11);
 		
-		JLabel lblWriteDoublesFile = new JLabel("Write doubles file");
-		frmAbookVcf.getContentPane().add(lblWriteDoublesFile, "2, 10");
+		JLabel label_4 = new JLabel("VCard version");
+		GridBagConstraints gbc_label_4 = new GridBagConstraints();
+		gbc_label_4.anchor = GridBagConstraints.EAST;
+		gbc_label_4.insets = new Insets(0, 0, 5, 5);
+		gbc_label_4.gridx = 0;
+		gbc_label_4.gridy = 3;
+		panel_1.add(label_4, gbc_label_4);
 		
-		JCheckBox chkDoubles = new JCheckBox("");
-		lblWriteDoublesFile.setLabelFor(chkDoubles);
-		frmAbookVcf.getContentPane().add(chkDoubles, "4, 10");
+		JComboBox comboBox = new JComboBox();
+		comboBox.setSelectedIndex(0);
+		comboBox.setMaximumRowCount(2);
+		GridBagConstraints gbc_comboBox = new GridBagConstraints();
+		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox.gridx = 1;
+		gbc_comboBox.gridy = 3;
+		panel_1.add(comboBox, gbc_comboBox);
 		
-		JLabel lblWriteTextDump = new JLabel("Write text dump");
-		frmAbookVcf.getContentPane().add(lblWriteTextDump, "2, 12");
+		JLabel label_5 = new JLabel("Write doubles file");
+		GridBagConstraints gbc_label_5 = new GridBagConstraints();
+		gbc_label_5.insets = new Insets(0, 0, 5, 5);
+		gbc_label_5.gridx = 0;
+		gbc_label_5.gridy = 4;
+		panel_1.add(label_5, gbc_label_5);
 		
-		JCheckBox chkTextDump = new JCheckBox("");
-		lblWriteTextDump.setLabelFor(chkTextDump);
-		frmAbookVcf.getContentPane().add(chkTextDump, "4, 12");
+		JCheckBox checkBox = new JCheckBox("");
+		GridBagConstraints gbc_checkBox = new GridBagConstraints();
+		gbc_checkBox.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox.gridx = 1;
+		gbc_checkBox.gridy = 4;
+		panel_1.add(checkBox, gbc_checkBox);
 		
-		JLabel lblWriteCsvDump = new JLabel("Write csv dump");
-		frmAbookVcf.getContentPane().add(lblWriteCsvDump, "2, 14");
+		JLabel label_6 = new JLabel("Write text dump");
+		GridBagConstraints gbc_label_6 = new GridBagConstraints();
+		gbc_label_6.insets = new Insets(0, 0, 5, 5);
+		gbc_label_6.gridx = 0;
+		gbc_label_6.gridy = 5;
+		panel_1.add(label_6, gbc_label_6);
 		
-		JCheckBox chkCSVDump = new JCheckBox("");
-		lblWriteCsvDump.setLabelFor(chkCSVDump);
-		frmAbookVcf.getContentPane().add(chkCSVDump, "4, 14");
+		JCheckBox checkBox_1 = new JCheckBox("");
+		GridBagConstraints gbc_checkBox_1 = new GridBagConstraints();
+		gbc_checkBox_1.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_1.gridx = 1;
+		gbc_checkBox_1.gridy = 5;
+		panel_1.add(checkBox_1, gbc_checkBox_1);
 		
-		JLabel lblCmdCall = new JLabel("cmd call");
-		frmAbookVcf.getContentPane().add(lblCmdCall, "2, 16");
+		JLabel label_7 = new JLabel("Write csv dump");
+		GridBagConstraints gbc_label_7 = new GridBagConstraints();
+		gbc_label_7.insets = new Insets(0, 0, 5, 5);
+		gbc_label_7.gridx = 0;
+		gbc_label_7.gridy = 6;
+		panel_1.add(label_7, gbc_label_7);
 		
-		JLabel lblCMDLine = new JLabel("");
-		lblCmdCall.setLabelFor(lblCMDLine);
-		lblCMDLine.setFont(lblCMDLine.getFont().deriveFont(lblCMDLine.getFont().getStyle() & ~Font.BOLD, lblCMDLine.getFont().getSize() - 2f));
-		frmAbookVcf.getContentPane().add(lblCMDLine, "4, 16");
-	}
-
-	/**
-	 * Selects abook file.
-	 * 
-	 * @version 0.2
-	 * @since 0.2
-	 */
-	private void selectABookFile() {
-
-		JFileChooser chsDialog = new JFileChooser();
-		chsDialog.setDialogTitle("ABook file");
-		chsDialog.setDialogType(JFileChooser.OPEN_DIALOG);
-		chsDialog.setAcceptAllFileFilterUsed(false);
-		chsDialog.addChoosableFileFilter(new FileNameExtensionFilter("ABook files", "mab"));
-		chsDialog.setAcceptAllFileFilterUsed(true);
+		JCheckBox checkBox_2 = new JCheckBox("");
+		GridBagConstraints gbc_checkBox_2 = new GridBagConstraints();
+		gbc_checkBox_2.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_2.gridx = 1;
+		gbc_checkBox_2.gridy = 6;
+		panel_1.add(checkBox_2, gbc_checkBox_2);
 		
-		if (chsDialog.showOpenDialog(frmAbookVcf) == JFileChooser.APPROVE_OPTION) {
-			txtABook.setText(chsDialog.getSelectedFile().getAbsolutePath());
-		}
-	
-	}
-
-	/**
-	 * Selects VCF file.
-	 * 
-	 * @version 0.2
-	 * @since 0.2
-	 */
-	private void selectVCFFile() {
-
-		JFileChooser chsDialog = new JFileChooser();
-		chsDialog.setDialogTitle("VCF file");
-		chsDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-		chsDialog.setAcceptAllFileFilterUsed(false);
-		chsDialog.addChoosableFileFilter(new FileNameExtensionFilter("VCF files", "vcf"));
-		chsDialog.setAcceptAllFileFilterUsed(true);
+		JLabel label_8 = new JLabel("cmd call");
+		GridBagConstraints gbc_label_8 = new GridBagConstraints();
+		gbc_label_8.insets = new Insets(0, 0, 0, 5);
+		gbc_label_8.gridx = 0;
+		gbc_label_8.gridy = 7;
+		panel_1.add(label_8, gbc_label_8);
 		
-		if (chsDialog.showSaveDialog(frmAbookVcf) == JFileChooser.APPROVE_OPTION) {
-			txtVCF.setText(chsDialog.getSelectedFile().getAbsolutePath());
-		}
-	
+		JLabel label_9 = new JLabel("");
+		label_9.setFont(label_9.getFont().deriveFont(label_9.getFont().getStyle() & ~Font.BOLD, label_9.getFont().getSize() - 2f));
+		GridBagConstraints gbc_label_9 = new GridBagConstraints();
+		gbc_label_9.insets = new Insets(0, 0, 0, 5);
+		gbc_label_9.gridx = 1;
+		gbc_label_9.gridy = 7;
+		panel_1.add(label_9, gbc_label_9);
 	}
 	
 	/**
