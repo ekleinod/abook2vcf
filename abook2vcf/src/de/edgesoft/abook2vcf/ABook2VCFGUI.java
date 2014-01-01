@@ -202,6 +202,9 @@ public class ABook2VCFGUI {
 
 	/**
 	 * Selects abook file.
+	 * 
+	 * @version 0.2
+	 * @since 0.2
 	 */
 	private void selectABookFile() {
 
@@ -220,6 +223,9 @@ public class ABook2VCFGUI {
 
 	/**
 	 * Selects VCF file.
+	 * 
+	 * @version 0.2
+	 * @since 0.2
 	 */
 	private void selectVCFFile() {
 
@@ -238,6 +244,9 @@ public class ABook2VCFGUI {
 	
 	/**
 	 * Updates command line call display
+	 * 
+	 * @version 0.2
+	 * @since 0.2
 	 */
 	private void updateCMDLine() {
 		
