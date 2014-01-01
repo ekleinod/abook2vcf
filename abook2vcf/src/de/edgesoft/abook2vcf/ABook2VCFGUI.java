@@ -104,6 +104,7 @@ public class ABook2VCFGUI {
 		pnlMain.setLayout(gbl_pnlMain);
 		
 		JLabel lblABook = new JLabel("ABook file (input)");
+		lblABook.setDisplayedMnemonic('a');
 		GridBagConstraints gbc_lblABook = new GridBagConstraints();
 		gbc_lblABook.insets = new Insets(0, 0, 5, 5);
 		gbc_lblABook.anchor = GridBagConstraints.WEST;
@@ -159,6 +160,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblABookDefault, gbc_lblABookDefault);
 		
 		JLabel lblVCF = new JLabel("VCF file (output)");
+		lblVCF.setDisplayedMnemonic('v');
 		GridBagConstraints gbc_lblVCF = new GridBagConstraints();
 		gbc_lblVCF.anchor = GridBagConstraints.WEST;
 		gbc_lblVCF.insets = new Insets(0, 0, 5, 5);
@@ -214,6 +216,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblVCFDefault, gbc_lblVCFDefault);
 		
 		JLabel lblVCFCount = new JLabel("Cards per file");
+		lblVCFCount.setDisplayedMnemonic('r');
 		GridBagConstraints gbc_lblVCFCount = new GridBagConstraints();
 		gbc_lblVCFCount.anchor = GridBagConstraints.WEST;
 		gbc_lblVCFCount.insets = new Insets(0, 0, 5, 5);
@@ -248,6 +251,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(lblVCFCountDefault, gbc_lblVCFCountDefault);
 		
 		JLabel lblVersion = new JLabel("VCard version");
+		lblVersion.setDisplayedMnemonic('i');
 		lblVersion.setLabelFor(spnVCFCount);
 		GridBagConstraints gbc_lblVersion = new GridBagConstraints();
 		gbc_lblVersion.anchor = GridBagConstraints.WEST;
@@ -275,6 +279,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(cboVersion, gbc_cboVersion);
 		
 		JLabel lblDoubles = new JLabel("Write doubles file");
+		lblDoubles.setDisplayedMnemonic('d');
 		GridBagConstraints gbc_lblDoubles = new GridBagConstraints();
 		gbc_lblDoubles.anchor = GridBagConstraints.WEST;
 		gbc_lblDoubles.insets = new Insets(0, 0, 5, 5);
@@ -298,6 +303,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(chkDoubles, gbc_chkDoubles);
 		
 		JLabel lblTextDump = new JLabel("Write text dump");
+		lblTextDump.setDisplayedMnemonic('t');
 		GridBagConstraints gbc_lblTextDump = new GridBagConstraints();
 		gbc_lblTextDump.anchor = GridBagConstraints.WEST;
 		gbc_lblTextDump.insets = new Insets(0, 0, 5, 5);
@@ -321,6 +327,7 @@ public class ABook2VCFGUI {
 		pnlMain.add(chkTextDump, gbc_chkTextDump);
 		
 		JLabel lblCSVDump = new JLabel("Write csv dump");
+		lblCSVDump.setDisplayedMnemonic('s');
 		GridBagConstraints gbc_lblCSVDump = new GridBagConstraints();
 		gbc_lblCSVDump.anchor = GridBagConstraints.WEST;
 		gbc_lblCSVDump.insets = new Insets(0, 0, 5, 5);
@@ -368,7 +375,8 @@ public class ABook2VCFGUI {
 		frmAbookVcf.getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 		pnlBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		btnConvert = new JButton("convert");
+		btnConvert = new JButton("Convert");
+		btnConvert.setMnemonic('c');
 		btnConvert.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -377,7 +385,8 @@ public class ABook2VCFGUI {
 		});
 		pnlBottom.add(btnConvert);
 		
-		JButton btnExit = new JButton("exit");
+		JButton btnExit = new JButton("Exit");
+		btnExit.setMnemonic('x');
 		btnExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
