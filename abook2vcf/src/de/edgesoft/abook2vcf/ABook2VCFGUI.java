@@ -2,6 +2,7 @@ package de.edgesoft.abook2vcf;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -19,13 +20,14 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -53,6 +55,7 @@ public class ABook2VCFGUI {
 	private JCheckBox chkDoubles;
 	private JComboBox cboVersion;
 	private JSpinner spnVCFCount;
+	private JButton btnConvert;
 	
 	/**
 	 * Launch the application.
@@ -357,6 +360,28 @@ public class ABook2VCFGUI {
 		gbc_lblCMDLine.gridx = 1;
 		gbc_lblCMDLine.gridy = 7;
 		pnlMain.add(lblCMDLine, gbc_lblCMDLine);
+		
+		JPanel pnlBottom = new JPanel();
+		frmAbookVcf.getContentPane().add(pnlBottom, BorderLayout.SOUTH);
+		pnlBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		btnConvert = new JButton("convert");
+		btnConvert.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				executeConversion();
+			}
+		});
+		pnlBottom.add(btnConvert);
+		
+		JButton btnExit = new JButton("exit");
+		btnExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		pnlBottom.add(btnExit);
 	}
 	
 	/**
@@ -447,6 +472,26 @@ public class ABook2VCFGUI {
 		if (lblCMDLine != null) {
 			lblCMDLine.setText(sbCMD.toString());
 		}
+	}
+	
+	/**
+	 * Executes conversion.
+	 */
+	private void executeConversion() {
+		btnConvert.setEnabled(false);
+		try {
+			ABook2VCF.convertABook(sABookFile, sVCFFile, iVCFCount, sVersion, bDoubles, bTextDump, bCSVDump);
+			JOptionPane.showMessageDialog(frmAbookVcf, 
+					"Conversion successful.",
+					ABook2VCF.class.getSimpleName(),
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (ABookException e) {
+			JOptionPane.showMessageDialog(frmAbookVcf, 
+					String.format("Conversion failed:%n%s", e.getMessage()),
+					ABook2VCF.class.getSimpleName(),
+					JOptionPane.ERROR_MESSAGE);
+		}
+		btnConvert.setEnabled(true);
 	}
 
 }
