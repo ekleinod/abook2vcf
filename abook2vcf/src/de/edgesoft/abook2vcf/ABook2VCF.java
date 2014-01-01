@@ -22,25 +22,25 @@ import de.edgesoft.utilities.commandline.CommandOption;
 public class ABook2VCF extends AbstractMainClass {
 
 	/** Argument input file. */
-	private final static CommandOption OPT_ABOOK = new CommandOption("a", "abook", true, "<abookfile> (default: abook.mab)", false);
+	public final static CommandOption OPT_ABOOK = new CommandOption("a", "abook", true, "<abookfile> (default: abook.mab)", false);
 	
 	/** Argument output file. */
-	private final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "<output file> (default: abook.vcf)", false);
+	public final static CommandOption OPT_OUTFILE = new CommandOption("o", "outputfile", true, "<output file> (default: abook.vcf)", false);
 	
 	/** Argument vcard count. */
-	private final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "<#> (number of vcards per file, default: 0 = unlimited)", false);
+	public final static CommandOption OPT_VCFCOUNT = new CommandOption("c", "count", true, "<#> (number of vcards per file, default: 0 = unlimited)", false);
 	
 	/** Argument vcard version. */
-	private final static CommandOption OPT_VERSION = new CommandOption("v", "version", true, "<#.#> (vcard version, default: 3.0)", false);
+	public final static CommandOption OPT_VERSION = new CommandOption("v", "version", true, "<#.#> (vcard version, default: 3.0)", false);
 	
 	/** Argument doubles. */
-	private final static CommandOption OPT_DOUBLES = new CommandOption("d", "doubles", false, "(write doubles' vcards)", false);
+	public final static CommandOption OPT_DOUBLES = new CommandOption("d", "doubles", false, "(write doubles' vcards)", false);
 	
 	/** Argument text dump. */
-	private final static CommandOption OPT_TEXTDUMP = new CommandOption("t", "textdump", false, "(write text dump)", false);
+	public final static CommandOption OPT_TEXTDUMP = new CommandOption("t", "textdump", false, "(write text dump)", false);
 	
 	/** Argument csv dump. */
-	private final static CommandOption OPT_CSVDUMP = new CommandOption("s", "csvdump", false, "(write csv dump)", false);
+	public final static CommandOption OPT_CSVDUMP = new CommandOption("s", "csvdump", false, "(write csv dump)", false);
 	
 	/** Vcard file extension. */
 	private final static String VCF_FILE_EXTENSION = ".vcf";
