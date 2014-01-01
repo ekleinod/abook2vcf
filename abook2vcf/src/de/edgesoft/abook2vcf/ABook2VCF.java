@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import de.edgesoft.abook2vcf.jmork.Address;
 import de.edgesoft.abook2vcf.jmork.AddressBook;
@@ -60,7 +61,6 @@ public class ABook2VCF extends AbstractMainClass {
 	 * @since 0.1
 	 */
 	public static void main(String[] args) {
-		printMessage("start.");
 		
 		addCommandOption(OPT_ABOOK);
 		addCommandOption(OPT_OUTFILE);
@@ -71,6 +71,8 @@ public class ABook2VCF extends AbstractMainClass {
 		addCommandOption(OPT_CSVDUMP);
 		
 		init(args, ABook2VCF.class);
+		
+		log(Level.INFO, "start.");
 		
 		try {
 			String sInFile = (getOptionValue(OPT_ABOOK) == null) ? "abook.mab" : getOptionValue(OPT_ABOOK);
@@ -98,14 +100,12 @@ public class ABook2VCF extends AbstractMainClass {
 			convertABook(sInFile, sOutFile, iVCFCount, sVersion, bWriteDoubles, bWriteTextDump, bWriteCsvDump);
 			
 		} catch (Exception e) {
-			printError("");
-			printError(getUsage());
-			printError("");
-			printError(e);
+			log(Level.SEVERE, getUsage());
+			log(e);
 			System.exit(1);
 		}
 		
-		printMessage("end.");
+		log(Level.INFO, "end.");
 	}
 	
 	/**
@@ -129,8 +129,8 @@ public class ABook2VCF extends AbstractMainClass {
 		try {
 			AddressBook theAddressBook = loadAdresses(theInFile);
 			
-			printMessage(MessageFormat.format("address count: {0, number}", theAddressBook.getAddressesDBRowID().size()));
-			printMessage(MessageFormat.format("double count: {0, number}", theAddressBook.getAddressesDBRowIDRemoved().size()));
+			log(Level.INFO, MessageFormat.format("address count: {0, number}", theAddressBook.getAddressesDBRowID().size()));
+			log(Level.INFO, MessageFormat.format("double count: {0, number}", theAddressBook.getAddressesDBRowIDRemoved().size()));
 
 			String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), theOutFile, theVCFCount);
 
@@ -418,13 +418,13 @@ public class ABook2VCF extends AbstractMainClass {
 			try {
 				stmABook = new FileInputStream(fleABook);
 				
-				printMessage(MessageFormat.format("reading abook file: ''{0}''", fleABook.getAbsoluteFile()));
+				log(Level.INFO, MessageFormat.format("reading abook file: ''{0}''", fleABook.getAbsoluteFile()));
 				
 				theAddressBook.load(stmABook);
 				
 			} finally {
 				if (stmABook != null) {
-					printMessage(MessageFormat.format("closing abook file: ''{0}''", fleABook.getAbsoluteFile()));
+					log(Level.INFO, MessageFormat.format("closing abook file: ''{0}''", fleABook.getAbsoluteFile()));
 					stmABook.close();
 				}
 			}

@@ -4,10 +4,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -23,6 +28,9 @@ import org.apache.commons.cli.PosixParser;
  */
 public abstract class AbstractMainClass {
 	
+	/** Logger. */
+	private final static Logger logger = Logger.getLogger(AbstractMainClass.class.getName());
+	
 	/** Storage for options. */
 	private static List<CommandOption> lstCommandOptions = null;
 	
@@ -31,9 +39,12 @@ public abstract class AbstractMainClass {
 	
 	/** Calling class. */
 	private static Class<? extends AbstractMainClass> theCallingClass = null;
-
+	
+	/** Logging output stream. */
+	private static OutputStream stmLog = System.out;
+	
 	/**
-	 * Main method, called from command line.
+	 * Initialize class.
 	 * 
 	 * @param args command line arguments
 	 * @param theClass calling class
@@ -42,6 +53,7 @@ public abstract class AbstractMainClass {
 	 * @since 0.1
 	 */
 	public static void init(String[] args, Class<? extends AbstractMainClass> theClass) {
+		
 		try {
 			// store calling class
 			theCallingClass = theClass;
@@ -55,10 +67,8 @@ public abstract class AbstractMainClass {
 			// parse options
 			theCommandLine = new PosixParser().parse(theOptions, args);
 		} catch (Exception e) {
-			printError("");
-			printError(getUsage());
-			printError("");
-			printError(e);
+			logger.severe(getUsage());
+			log(e);
 			System.exit(1);
 		}
 	}
@@ -160,34 +170,44 @@ public abstract class AbstractMainClass {
 				wrtOutput.close();
 			}
 		}
-		printMessage(MessageFormat.format("Created file: ''{0}''.", fleOutput.getAbsolutePath()));
+		logger.info(MessageFormat.format("Created file: ''{0}''.", fleOutput.getAbsolutePath()));
 	}
 	
 	/**
-	 * Prints a message.
+	 * Sets logging stream (if not called, system out is used).
+	 * 
+	 * @param theOutputStream output stream
+	 */
+	public static void setLoggingStream(OutputStream theOutputStream) {
+		stmLog = theOutputStream;
+	}
+	
+	/**
+	 * logs a message.
 	 * 
 	 * @param theMessage the message
 	 */
-	public static void printMessage(String theMessage) {
-		System.out.println(theMessage);
+	public static void log(Level theLevel, String theMessage) {
+		if (logger.getHandlers().length == 0) {
+			logger.setUseParentHandlers(false);
+			logger.addHandler(new StreamHandler(stmLog, new SimpleFormatter()));
+		}
+		
+		logger.log(theLevel, theMessage);
 	}
 	
 	/**
-	 * Prints an error message.
-	 * 
-	 * @param theError the error message
-	 */
-	public static void printError(String theError) {
-		System.out.println(theError);
-	}
-	
-	/**
-	 * Prints an exception.
+	 * logs an exception.
 	 * 
 	 * @param theException the exception
 	 */
-	public static void printError(Exception theException) {
-		theException.printStackTrace();
+	public static void log(Exception theException) {
+		StringBuffer sbTemp = new StringBuffer();
+		sbTemp.append(String.format("%s: %s%n", theException.getClass().getSimpleName(), theException.getMessage()));
+		for (StackTraceElement theStackTraceElement : theException.getStackTrace()) {
+			sbTemp.append(String.format("\t%s%n", theStackTraceElement.toString()));
+		}
+		log(Level.SEVERE, sbTemp.toString());
 	}
 	
 }
