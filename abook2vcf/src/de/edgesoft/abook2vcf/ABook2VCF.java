@@ -130,47 +130,42 @@ public class ABook2VCF extends AbstractMainClass {
 			sVersion = VERSION_3;
 		}
 		
-		try {
-			AddressBook theAddressBook = loadAdresses(sInFile);
-			
-			Log.getLgr().log(Level.INFO, "address count: {0}", theAddressBook.getAddressesDBRowID().size());
-			Log.getLgr().log(Level.INFO, "double count: {0}", theAddressBook.getAddressesDBRowIDRemoved().size());
+		AddressBook theAddressBook = loadAdresses(sInFile);
+		
+		Log.getLgr().log(Level.INFO, "address count: {0}", theAddressBook.getAddressesDBRowID().size());
+		Log.getLgr().log(Level.INFO, "double count: {0}", theAddressBook.getAddressesDBRowIDRemoved().size());
 
-			String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), sOutFile, iVCFCount);
+		String sOutFilePattern = getOutFilePattern(theAddressBook.getAddressesDBRowID().size(), sOutFile, iVCFCount);
 
-			writeVCards(theAddressBook.getAddressesDBRowID(), sOutFilePattern, iVCFCount, sVersion);
+		writeVCards(theAddressBook.getAddressesDBRowID(), sOutFilePattern, iVCFCount, sVersion);
 
-			if (bWriteDoubles) {
-				File fleTemp = new File(sOutFilePattern);
-				String sDoublePattern = String.format("double.%s", fleTemp.getName());
-				if (fleTemp.getParent() != null) {
-					sDoublePattern = String.format("%s%s%s", fleTemp.getParent(), System.getProperty("file.separator"), sDoublePattern);
-				}
-				writeVCards(theAddressBook.getAddressesDBRowIDRemoved(), sDoublePattern, iVCFCount, sVersion);
+		if (bWriteDoubles) {
+			File fleTemp = new File(sOutFilePattern);
+			String sDoublePattern = String.format("double.%s", fleTemp.getName());
+			if (fleTemp.getParent() != null) {
+				sDoublePattern = String.format("%s%s%s", fleTemp.getParent(), System.getProperty("file.separator"), sDoublePattern);
 			}
-			
-			if (bWriteTextDump) {
-				String sFileName = sOutFile;
-				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
-					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
-				}
-				sFileName = String.format("%s.dump.txt", sFileName);
-				writeTextDump(theAddressBook.getAddresses(), sFileName, sInFile);
-			}
-			
-			if (bWriteCsvDump) {
-				String sFileName = sOutFile;
-				if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
-					sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
-				}
-				sFileName = String.format("%s.dump.csv", sFileName);
-				writeCsvDump(theAddressBook.getAddresses(), sFileName);
-			}
-			
-		} catch (Exception e) {
-			throw new ABookException(e.getLocalizedMessage());
+			writeVCards(theAddressBook.getAddressesDBRowIDRemoved(), sDoublePattern, iVCFCount, sVersion);
 		}
 		
+		if (bWriteTextDump) {
+			String sFileName = sOutFile;
+			if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
+				sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
+			}
+			sFileName = String.format("%s.dump.txt", sFileName);
+			writeTextDump(theAddressBook.getAddresses(), sFileName, sInFile);
+		}
+		
+		if (bWriteCsvDump) {
+			String sFileName = sOutFile;
+			if (sFileName.endsWith(VCF_FILE_EXTENSION)) {
+				sFileName = sFileName.substring(0, sFileName.length() - VCF_FILE_EXTENSION.length());
+			}
+			sFileName = String.format("%s.dump.csv", sFileName);
+			writeCsvDump(theAddressBook.getAddresses(), sFileName);
+		}
+			
 	}
 	
 	/**
@@ -416,24 +411,14 @@ public class ABook2VCF extends AbstractMainClass {
 			throw new ABookException(MessageFormat.format("File ''{0}'' is no file (maybe a directory?)", theInFile));
 		}
 		
-		try {
-			FileInputStream stmABook = null;
+		try (FileInputStream stmABook = new FileInputStream(fleABook)) {
 			
-			try {
-				stmABook = new FileInputStream(fleABook);
-				
-				Log.getLgr().log(Level.INFO, "reading abook file: {0}", fleABook.getAbsoluteFile());
-				
-				theAddressBook.load(stmABook);
-				
-			} finally {
-				if (stmABook != null) {
-					Log.getLgr().log(Level.INFO, "closing abook file: {0}", fleABook.getAbsoluteFile());
-					stmABook.close();
-				}
-			}
+			Log.getLgr().log(Level.INFO, "reading abook file: {0}", fleABook.getAbsoluteFile());
+			theAddressBook.load(stmABook);
+			Log.getLgr().log(Level.INFO, "closing abook file: {0}", fleABook.getAbsoluteFile());
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ABookException(e.getLocalizedMessage());
 		}
 		

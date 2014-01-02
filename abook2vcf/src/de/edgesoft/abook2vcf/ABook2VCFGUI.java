@@ -540,3 +540,5 @@ public class ABook2VCFGUI {
 	}
 
 }
+
+/* EOF */

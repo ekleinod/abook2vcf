@@ -21,11 +21,14 @@ import mork.Table;
  * @author mhaller
  * @author ibauersachs
  * @author Ekkart Kleinod (ekleinod)
+ * 
+ * @version 0.2
+ * @since 0.1
  */
 public class AddressBook {
 
 	/** Internal container for addresses. */
-	private final List<Address> addresses = new LinkedList<Address>();
+	private final List<Address> addresses = new LinkedList<>();
 	
 	/** Storage of exception handler. */
 	private ExceptionHandler exceptionHandler = null;
@@ -38,10 +41,13 @@ public class AddressBook {
 	
 	/**
 	 * Default constructor.
+	 * 
+	 * @version 0.2
+	 * @since 0.1
 	 */
 	public AddressBook() {
-		lstAddressesDBRowID = new ArrayList<Address>();
-		lstAddressesDBRowIDRemoved = new ArrayList<Address>();
+		lstAddressesDBRowID = new ArrayList<>();
+		lstAddressesDBRowIDRemoved = new ArrayList<>();
 	}
 	
 	/**
@@ -55,6 +61,9 @@ public class AddressBook {
 	 * instance, the addresses get collected into the same address book.
 	 * 
 	 * @param inputStream the stream to load the address book from.
+	 * 
+	 * @version 0.2
+	 * @since 0.1
 	 */
 	public void load(final InputStream inputStream) {
 		
@@ -80,8 +89,8 @@ public class AddressBook {
 		}
 		
 		// DBRowID
-		Map<String, Address> mapTemp = new HashMap<String, Address>();
-		lstAddressesDBRowIDRemoved = new ArrayList<Address>();
+		Map<String, Address> mapTemp = new HashMap<>();
+		lstAddressesDBRowIDRemoved = new ArrayList<>();
 		for (Address theAddress : addresses) {
 			if (mapTemp.containsKey(theAddress.getString(AddressKeys.DB_ROW_I_D))) {
 				if (theAddress.getString(AddressKeys.LAST_MODIFIED_DATE).compareToIgnoreCase(
@@ -96,7 +105,7 @@ public class AddressBook {
 			}
 		}
 		
-		lstAddressesDBRowID = new ArrayList<Address>(mapTemp.values());
+		lstAddressesDBRowID = new ArrayList<>(mapTemp.values());
 		Collections.sort(lstAddressesDBRowID, new AddressComparator());
 		Collections.sort(lstAddressesDBRowIDRemoved, new AddressComparator());
 	}
@@ -106,6 +115,9 @@ public class AddressBook {
 	 * 
 	 * @return an unmodifiable list of all {@link Address}es, might be empty, never null.
 	 *  @retval empty list if no addresses are in the address book
+	 * 
+	 * @version 0.1
+	 * @since 0.1
 	 */
 	public List<Address> getAddresses() {
 		
@@ -119,12 +131,15 @@ public class AddressBook {
 	/**
 	 * Returns an unmodifiable list of all {@link Address}es in their last modified form.
 	 * 
-	 * This method removes all duplicates of {@link Address}es.
+	 * The list does not contain duplicates of {@link Address}es.
 	 * Duplicates means here: addresses with the same DBRowID.
 	 * If several addresses contain the same DBRowID, the last modified (LastModifiedDate) address is used.
 	 * 
 	 * @return an unmodifiable list of DBRowID-unique {@link Address}es, might be empty, never null.
 	 *  @retval empty list if no addresses are to be returned
+	 * 
+	 * @version 0.1
+	 * @since 0.1
 	 */
 	public List<Address> getAddressesDBRowID() {
 		
@@ -140,6 +155,9 @@ public class AddressBook {
 	 * 
 	 * @return an unmodifiable list of remaining {@link Address}es of {@link #getAddressesDBRowID()}, might be empty, never null.
 	 *  @retval empty list if no addresses are to be returned
+	 * 
+	 * @version 0.1
+	 * @since 0.1
 	 */
 	public List<Address> getAddressesDBRowIDRemoved() {
 		
@@ -154,6 +172,9 @@ public class AddressBook {
 	 * Sets the exception handler.
 	 * 
 	 * @param exceptionHandler new exception handler
+	 * 
+	 * @version 0.1
+	 * @since 0.1
 	 */
 	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
 		this.exceptionHandler = exceptionHandler;

@@ -18,7 +18,7 @@ import java.util.Comparator;
  * 
  * @author ibauersachs
  * @author Ekkart Kleinod (ekleinod)
- * @version 0.1
+ * @version 0.2
  * @since 0.1
  */
 public class AddressComparator implements Comparator<Address> {
@@ -26,10 +26,22 @@ public class AddressComparator implements Comparator<Address> {
 	/**
 	 * Compares two addresses.
 	 * 
-	 * @version 0.1
+     * @param o1 the first object to be compared.
+     * @param o2 the second object to be compared.
+     * @return a negative integer, zero, or a positive integer as the
+     *         first argument is less than, equal to, or greater than the
+     *         second.
+     *         
+	 * @version 0.2
 	 * @since 0.1
 	 */
+	@Override
 	public int compare(Address o1, Address o2) {
+		
+		if (o1 == o2) {
+			return 0;
+		}
+		
 		int iComparison = 0;
 		
 		String sO1 = o1.get(AddressKeys.LAST_NAME);
