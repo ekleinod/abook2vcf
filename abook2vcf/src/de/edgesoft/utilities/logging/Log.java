@@ -62,6 +62,9 @@ public class Log {
 	 * 
 	 * @return log information
 	 *  @retval null if an error occurred or no {@link ByteArrayOutputStream} was specified
+	 * 
+	 * @version 0.2
+	 * @since 0.2
 	 */
 	public static String getLogMessage() {
 		if ((logHandler instanceof StreamHandler) && (stmLogging != null) && (stmLogging instanceof ByteArrayOutputStream)) {
@@ -80,6 +83,9 @@ public class Log {
 	 * Returns the logger.
 	 * 
 	 * @return logger
+	 * 
+	 * @version 0.2
+	 * @since 0.2
 	 */
 	public static Logger getLgr() {
 		if (logger == null) {
