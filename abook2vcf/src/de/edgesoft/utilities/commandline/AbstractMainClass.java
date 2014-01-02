@@ -4,38 +4,27 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+
+import de.edgesoft.utilities.logging.Log;
 
 
 /**
  * Abstract class for classes with command line call.
  * 
  * @author Ekkart Kleinod
- * @version 0.1
+ * @version 0.2
  * @since 0.1
  */
 public abstract class AbstractMainClass {
-	
-	/** Logger. */
-	private final static Logger logger = Logger.getLogger(AbstractMainClass.class.getName());
-
-	/** Logger's handler. */
-	private static Handler stmHandler = null;
 	
 	/** Storage for options. */
 	private static List<CommandOption> lstCommandOptions = null;
@@ -45,9 +34,6 @@ public abstract class AbstractMainClass {
 	
 	/** Calling class. */
 	private static Class<? extends AbstractMainClass> theCallingClass = null;
-	
-	/** Logging output stream. */
-	private static OutputStream stmLog = System.out;
 	
 	/**
 	 * Initialize class.
@@ -73,8 +59,8 @@ public abstract class AbstractMainClass {
 			// parse options
 			theCommandLine = new PosixParser().parse(theOptions, args);
 		} catch (Exception e) {
-			logger.severe(getUsage());
-			log(e);
+			Log.getLgr().log(Level.SEVERE, getUsage());
+			Log.getLgr().log(Level.SEVERE, "init exception", e);
 			System.exit(1);
 		}
 	}
@@ -176,57 +162,7 @@ public abstract class AbstractMainClass {
 				wrtOutput.close();
 			}
 		}
-		logger.info(MessageFormat.format("Created file: ''{0}''.", fleOutput.getAbsolutePath()));
-	}
-	
-	/**
-	 * Sets logging stream (if not called, system out is used).
-	 * 
-	 * @param theOutputStream output stream
-	 */
-	public static void setLoggingStream(OutputStream theOutputStream) {
-		stmLog = theOutputStream;
-	}
-	
-	/** 
-	 * Flushes the log handler. 
-	 */
-	public static void flushLog() {
-		stmHandler.flush();
-	}
-	
-	/**
-	 * logs a message.
-	 * 
-	 * @param theMessage the message
-	 */
-	public static void log(Level theLevel, String theMessage) {
-		if (logger.getHandlers().length == 0) {
-			logger.setUseParentHandlers(false);
-			stmHandler = new StreamHandler(stmLog, new SimpleFormatter());
-			try {
-				stmHandler.setEncoding(StandardCharsets.UTF_8.name());
-			} catch (SecurityException | UnsupportedEncodingException e) {
-				// do nothing, stay with default encoding
-			}
-			logger.addHandler(stmHandler);
-		}
-		
-		logger.log(theLevel, theMessage);
-	}
-	
-	/**
-	 * logs an exception.
-	 * 
-	 * @param theException the exception
-	 */
-	public static void log(Exception theException) {
-		StringBuffer sbTemp = new StringBuffer();
-		sbTemp.append(String.format("%s: %s%n", theException.getClass().getSimpleName(), theException.getMessage()));
-		for (StackTraceElement theStackTraceElement : theException.getStackTrace()) {
-			sbTemp.append(String.format("\t%s%n", theStackTraceElement.toString()));
-		}
-		log(Level.SEVERE, sbTemp.toString());
+		Log.getLgr().log(Level.INFO, "Created file: {0}.", fleOutput.getAbsolutePath());
 	}
 	
 }

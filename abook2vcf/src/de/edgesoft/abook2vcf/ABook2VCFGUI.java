@@ -13,7 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -26,13 +26,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+
+import de.edgesoft.utilities.logging.Log;
 
 /**
  * Simple GUI for {@link ABook2VCF}.
@@ -500,21 +501,20 @@ public class ABook2VCFGUI {
 		try {
 			ByteArrayOutputStream stmOut = new ByteArrayOutputStream();
 			try {
-				ABook2VCF.setLoggingStream(stmOut);
+				Log.init(ABook2VCF.class, stmOut);
 				ABook2VCF.convertABook(sABookFile, sVCFFile, iVCFCount, sVersion, bDoubles, bTextDump, bCSVDump);
 				JOptionPane.showMessageDialog(frmAbookVcf, 
 						"Conversion successful.",
 						ABook2VCF.class.getSimpleName(),
 						JOptionPane.INFORMATION_MESSAGE);
 			} catch (ABookException e) {
-				ABook2VCF.log(e);
-				ABook2VCF.flushLog();
+				Log.getLgr().log(Level.SEVERE, "oh no, an exception", e);
 				JOptionPane.showMessageDialog(frmAbookVcf, 
 						String.format("Conversion failed:%n%s", e.getMessage()),
 						ABook2VCF.class.getSimpleName(),
 						JOptionPane.ERROR_MESSAGE);
 				JOptionPane.showMessageDialog(frmAbookVcf, 
-						String.format("Log:%n%s", stmOut.toString(StandardCharsets.UTF_8.name())),
+						String.format("Log:%n%s", Log.getLogMessage()),
 						ABook2VCF.class.getSimpleName(),
 						JOptionPane.ERROR_MESSAGE);
 			} finally {
