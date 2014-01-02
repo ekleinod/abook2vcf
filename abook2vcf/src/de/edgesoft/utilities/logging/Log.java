@@ -82,6 +82,9 @@ public class Log {
 	/**
 	 * Returns the logger.
 	 * 
+	 * If init was called, the given values are used, otherwise a standard
+	 * logger is created.
+	 * 
 	 * @return logger
 	 * 
 	 * @version 0.2

@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -62,6 +63,7 @@ public class ABook2VCFGUI {
 	private JComboBox cboVersion;
 	private JSpinner spnVCFCount;
 	private JButton btnConvert;
+	private JTextArea txtLog;
 	
 	/**
 	 * Launch the application.
@@ -93,7 +95,7 @@ public class ABook2VCFGUI {
 	private void initialize() {
 		frmAbookVcf = new JFrame();
 		frmAbookVcf.setTitle("ABook 2 VCF");
-		frmAbookVcf.setBounds(100, 100, 563, 298);
+		frmAbookVcf.setBounds(100, 100, 563, 459);
 		frmAbookVcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAbookVcf.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -101,9 +103,9 @@ public class ABook2VCFGUI {
 		frmAbookVcf.getContentPane().add(pnlMain, BorderLayout.CENTER);
 		GridBagLayout gbl_pnlMain = new GridBagLayout();
 		gbl_pnlMain.columnWidths = new int[]{0, 0, 0};
-		gbl_pnlMain.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_pnlMain.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_pnlMain.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_pnlMain.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_pnlMain.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
+		gbl_pnlMain.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		pnlMain.setLayout(gbl_pnlMain);
 		
 		JLabel lblABook = new JLabel("ABook file (input)");
@@ -356,7 +358,7 @@ public class ABook2VCFGUI {
 		JLabel lblCMDCall = new JLabel("cmd call");
 		GridBagConstraints gbc_lblCMDCall = new GridBagConstraints();
 		gbc_lblCMDCall.anchor = GridBagConstraints.WEST;
-		gbc_lblCMDCall.insets = new Insets(0, 0, 0, 5);
+		gbc_lblCMDCall.insets = new Insets(0, 0, 5, 5);
 		gbc_lblCMDCall.gridx = 0;
 		gbc_lblCMDCall.gridy = 7;
 		pnlMain.add(lblCMDCall, gbc_lblCMDCall);
@@ -366,16 +368,29 @@ public class ABook2VCFGUI {
 		lblCMDCall.setLabelFor(lblCMDLine);
 		lblCMDLine.setFont(lblCMDLine.getFont().deriveFont(lblCMDLine.getFont().getStyle() & ~Font.BOLD, lblCMDLine.getFont().getSize() - 2f));
 		GridBagConstraints gbc_lblCMDLine = new GridBagConstraints();
+		gbc_lblCMDLine.insets = new Insets(0, 0, 5, 0);
 		gbc_lblCMDLine.gridwidth = 3;
 		gbc_lblCMDLine.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblCMDLine.anchor = GridBagConstraints.WEST;
-		gbc_lblCMDLine.insets = new Insets(0, 0, 0, 5);
 		gbc_lblCMDLine.gridx = 1;
 		gbc_lblCMDLine.gridy = 7;
 		pnlMain.add(lblCMDLine, gbc_lblCMDLine);
 		
+		JScrollPane pneLog = new JScrollPane();
+		GridBagConstraints gbc_pneLog = new GridBagConstraints();
+		gbc_pneLog.gridwidth = 4;
+		gbc_pneLog.insets = new Insets(0, 0, 0, 5);
+		gbc_pneLog.fill = GridBagConstraints.BOTH;
+		gbc_pneLog.gridx = 0;
+		gbc_pneLog.gridy = 8;
+		pnlMain.add(pneLog, gbc_pneLog);
+		
+		txtLog = new JTextArea();
+		txtLog.setEditable(false);
+		pneLog.setViewportView(txtLog);
+		
 		JPanel pnlBottom = new JPanel();
-		frmAbookVcf.getContentPane().add(pnlBottom, BorderLayout.SOUTH);
+		frmAbookVcf.getContentPane().add(pnlBottom, BorderLayout.PAGE_END);
 		pnlBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		btnConvert = new JButton("Convert");
@@ -398,9 +413,6 @@ public class ABook2VCFGUI {
 		});
 		pnlBottom.add(btnExit);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setEditable(false);
-		frmAbookVcf.getContentPane().add(textArea, BorderLayout.EAST);
 	}
 	
 	/**
@@ -498,6 +510,7 @@ public class ABook2VCFGUI {
 	 */
 	private void executeConversion() {
 		btnConvert.setEnabled(false);
+		txtLog.setText("");
 		try {
 			ByteArrayOutputStream stmOut = new ByteArrayOutputStream();
 			try {
@@ -509,12 +522,9 @@ public class ABook2VCFGUI {
 						JOptionPane.INFORMATION_MESSAGE);
 			} catch (ABookException e) {
 				Log.getLgr().log(Level.SEVERE, "oh no, an exception", e);
+				txtLog.setText(String.format("Log:%n%s", Log.getLogMessage()));
 				JOptionPane.showMessageDialog(frmAbookVcf, 
-						String.format("Conversion failed:%n%s", e.getMessage()),
-						ABook2VCF.class.getSimpleName(),
-						JOptionPane.ERROR_MESSAGE);
-				JOptionPane.showMessageDialog(frmAbookVcf, 
-						String.format("Log:%n%s", Log.getLogMessage()),
+						String.format("Conversion failed (see log):%n%s", e.getMessage()),
 						ABook2VCF.class.getSimpleName(),
 						JOptionPane.ERROR_MESSAGE);
 			} finally {
